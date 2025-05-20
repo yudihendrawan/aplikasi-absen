@@ -37,7 +37,7 @@
                         {{ __("Schedules") }}
                     </flux:navlist.item>
                     <flux:navlist.item
-                        icon="calendar"
+                        icon="calendar-days"
                         :href="route('leaves.index')"
                         :current="request()->routeIs('leaves.*')"
                         wire:navigate

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Leave;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LeaveController extends Controller
@@ -49,7 +50,8 @@ class LeaveController extends Controller
      */
     public function create()
     {
-        return view('pages.leaves.index', compact('leaves'));
+        $users = User::role(['sales'])->get();
+        return view('pages.leaves.create', compact('users'));
     }
 
     /**
@@ -59,14 +61,12 @@ class LeaveController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'store_id' => 'required|exists:stores,id',
-            'presents_id' => 'nullable|exists:presents,id',
-            'date' => 'required|date',
-            'check_in' => 'required|date_format:H:i',
-            'check_out' => 'required|date_format:H:i',
-            'time_tolerance' => 'required|date_format:H:i',
+            'name' => 'required|string|max:255',
+            'reason' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
-
         Leave::create($request->all());
 
         return redirect()->route('leaves.index')->with('success', 'Leave created successfully.');
