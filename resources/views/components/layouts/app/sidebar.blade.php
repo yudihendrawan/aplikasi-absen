@@ -36,6 +36,14 @@
                     >
                         {{ __("Schedules") }}
                     </flux:navlist.item>
+                    <flux:navlist.item
+                        icon="calendar"
+                        :href="route('leaves.index')"
+                        :current="request()->routeIs('leaves.*')"
+                        wire:navigate
+                    >
+                        {{ __("Leaves") }}
+                    </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

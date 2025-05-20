@@ -67,6 +67,7 @@ Route::view('dashboard', 'pages/dashboard/dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
+    Route::resource('leaves', App\Http\Controllers\LeaveController::class);
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
