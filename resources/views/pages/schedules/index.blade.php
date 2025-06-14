@@ -44,12 +44,18 @@
                 </select>
             </div>
 
-            <div>
+            <div class="flex gap-2">
                 <button type="submit"
                     class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
                     Filter
                 </button>
+
+                <a href="{{ route('schedules.index') }} " id="reset-button"
+                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+                    Reset
+                </a>
             </div>
+
         </form>
 
         <div id="schedule-container">
@@ -115,6 +121,13 @@
 
         window.addEventListener('popstate', function() {
             fetchAndUpdate(location.href);
+        });
+
+        const clearFilter = document.querySelector('a[href="{{ route('schedules.index') }}"]');
+        clearFilter.addEventListener('click', function(e) {
+            e.preventDefault();
+            form.reset();
+            fetchAndUpdate(this.href);
         });
     </script>
 

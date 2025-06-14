@@ -34,7 +34,7 @@
                         :current="request()->routeIs('schedules.*')"
                         wire:navigate
                     >
-                        {{ __("Schedules") }}
+                        {{ __("Jadwal") }}
                     </flux:navlist.item>
                     <flux:navlist.item
                         icon="calendar-days"
@@ -42,7 +42,7 @@
                         :current="request()->routeIs('leaves.*')"
                         wire:navigate
                     >
-                        {{ __("Leaves") }}
+                        {{ __("Izin") }}
                     </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>

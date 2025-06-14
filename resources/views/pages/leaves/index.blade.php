@@ -3,7 +3,8 @@
         <h1 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Izin Karyawan</h1>
         <form method="GET" action="{{ route('leaves.index') }}" class="mb-4 flex flex-wrap gap-4 items-end">
             <div>
-                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cari Nama Karyawan</label>
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cari Nama
+                    Karyawan</label>
                 <input type="text" name="search" id="search" value="{{ request('search') }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
@@ -45,8 +46,14 @@
 
             <div>
                 <button type="submit"
-                    class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">
                     Filter
+                </button>
+            </div>
+            <div>
+                <button type="button" onclick="window.location.href = '{{ route('leaves.create') }}'"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    {{ __('Create') }}
                 </button>
             </div>
         </form>
@@ -115,6 +122,50 @@
         window.addEventListener('popstate', function() {
             fetchAndUpdate(location.href);
         });
+    </script>
+
+    <script>
+        // date picker
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const startInput = document.getElementById('start_date');
+            const endInput = document.getElementById('end_date');
+
+            // Inisialisasi flatpickr untuk end_date
+            const endPicker = flatpickr(endInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                altInputClass: 'form-input block w-full rounded-lg border text-sm placeholder-gray-400',
+                onReady: function(_, __, instance) {
+                    instance.altInput.placeholder = "Pilih tanggal selesai";
+                }
+            });
+
+            // Inisialisasi flatpickr untuk start_date
+            const startPicker = flatpickr(startInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                altInputClass: 'form-input block w-full rounded-lg border text-sm placeholder-gray-400',
+                onChange: function(selectedDates) {
+                    if (selectedDates.length > 0) {
+                        endPicker.set('minDate', selectedDates[0]);
+                    }
+                },
+                onReady: function(_, __, instance) {
+                    instance.altInput.placeholder = "Pilih tanggal mulai";
+                }
+            });
+
+            // onChange ke endPicker untuk membatasi start_date maksimal
+            endPicker.config.onChange.push(function(selectedDates) {
+                if (selectedDates.length > 0) {
+                    startPicker.set('maxDate', selectedDates[0]);
+                }
+            });
+        });
+        // end date picker  
     </script>
 
 

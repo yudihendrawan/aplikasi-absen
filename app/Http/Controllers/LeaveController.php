@@ -16,8 +16,7 @@ class LeaveController extends Controller
         $query = Leave::with(['user']);
 
         if ($search = $request->input('search')) {
-            $query->where("name","like","%$search%")->orWhereHas('user', fn($q) => $q->where('name', 'like', "%$search%"));
-               
+            $query->where("name", "like", "%$search%")->orWhereHas('user', fn($q) => $q->where('name', 'like', "%$search%"));
         }
 
         if ($startDate = $request->input('start_date')) {
@@ -59,17 +58,25 @@ class LeaveController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
-            'reason' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-        ]);
-        Leave::create($request->all());
 
-        return redirect()->route('leaves.index')->with('success', 'Leave created successfully.');
+        try {
+            $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'name' => 'required|string|max:255',
+                'reason' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+            ]);
+            Leave::create($request->all());
+
+            return redirect()->route('leaves.index')->with('success', 'Izin berhasil di tambahkan.');
+        } catch (\Throwable $th) {
+            if (app()->environment('local')) {
+                dd($th->getMessage());
+            }
+            return redirect()->back()->with('error', 'terjadi kesalahan.');
+        }
     }
 
     /**
@@ -78,39 +85,51 @@ class LeaveController extends Controller
     public function show(Leave $leave, string $id)
     {
         $leave->load(['user', 'store', 'creator']);
-        return view('pages.leaves.show', compact('leave'));
+        $users = User::role(['sales'])->get();
+        return view('pages.leaves.show', compact('leave', 'users'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Leave $leave)
+    public function edit($leave)
     {
-        $leave->load(['user', 'store', 'creator']);
-        return view('pages.leaves.edit', compact('leave'));
+
+        $leave = Leave::with(['user'])->find($leave);
+        // dd($leave);
+        // $leave->load(['user']);
+        $users = User::role(['sales'])->get();
+        return view('pages.leaves.edit', compact('leave', 'users'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Leave $leave)
+    public function update(Request $request,  $leave)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'store_id' => 'required|exists:stores,id',
-            'presents_id' => 'nullable|exists:presents,id',
-            'date' => 'required|date',
-            'check_in' => 'required|date_format:H:i',
-            'check_out' => 'required|date_format:H:i',
-            'time_tolerance' => 'required|date_format:H:i',
-        ]);
 
-        $leave->update($request->all());
+        try {
+            $leave = Leave::find($leave);
+            $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'name' => 'required|string|max:255',
+                'reason' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+            ]);
+            $leave->update($request->all());
 
-        return redirect()->route('leaves.index')->with('success', 'Leave updated successfully.');
+            return redirect()->route('leaves.index')->with('success', 'Izin berhasil di perbarui.');
+        } catch (\Throwable $th) {
+            if (app()->environment('local')) {
+                dd($th->getMessage());
+            }
+            return redirect()->back()->with('error', 'terjadi kesalahan.');
+        }
     }
 
- 
+
     /**
      * Remove the specified resource from storage.
      */
