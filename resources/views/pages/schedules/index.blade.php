@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Jadwal Karyawan')">
     <div class="overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800 p-4">
         <h1 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Jadwal</h1>
-        <form method="GET" action="{{ route('schedules.index') }}" class="mb-4 flex flex-wrap gap-4 items-end">
+        <form method="GET" action="{{ route('schedules.index') }}" class="mb-4 w-full flex flex-wrap gap-4 items-end">
             <div>
                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cari Nama /
                     Toko</label>
@@ -55,7 +55,12 @@
                     Reset
                 </a>
             </div>
-
+            <div class="ml-auto">
+                <button type="button" onclick="window.location.href = '{{ route('schedules.create') }}'"
+                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    {{ __('Create') }}
+                </button>
+            </div>
         </form>
 
         <div id="schedule-container">
@@ -69,6 +74,8 @@
         </div>
 
     </div>
+
+
     <style>
         #schedule-container {
             transition: opacity 0.3s ease;

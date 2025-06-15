@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('leaves', LeaveController::class);
     Route::redirect('settings', 'settings/profile');
+    Route::get('/schedules/{schedule}/visits', [ScheduleController::class, 'showVisits']);
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');

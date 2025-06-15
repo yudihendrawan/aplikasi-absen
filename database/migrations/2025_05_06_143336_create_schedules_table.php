@@ -13,14 +13,11 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('store_id')->constrained('stores');
-            $table->foreignId('presents_id')->nullable()->constrained('presents')->nullOnDelete();
+            $table->foreignId('user_id')->constrained('users')->unique(); //sales
+            $table->date('visit_date');
             $table->foreignId('created_by')->constrained('users'); // admin
-            $table->dateTime('date');
-            $table->time('check_in');
-            $table->time('check_out');
-            $table->time('time_tolerance');
+            $table->text('notes')->nullable();
+            $table->integer('time_tolerance')->nullable();
             $table->timestamps();
         });
     }

@@ -16,9 +16,9 @@ class Store extends Model
         return $this->hasMany(Schedule::class);
     }
 
-    public function presents(): HasMany
+    public function attendace(): HasMany
     {
-        return $this->hasMany(Present::class);
+        return $this->hasMany(Attendance::class);
     }
 
     public function invoices(): HasMany
