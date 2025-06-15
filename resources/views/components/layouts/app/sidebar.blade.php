@@ -44,12 +44,22 @@
                     >
                         {{ __("Izin") }}
                     </flux:navlist.item>
+                    @role('admin')
+                    <flux:navlist.item
+                        icon="users"
+                        :href="route('users.index')"
+                        :current="request()->routeIs('users.*')"
+                        wire:navigate
+                    >
+                        {{ __("Karyawan") }}
+                    </flux:navlist.item>
+                    @endrole @hasanyrole('admin|manager') @endhasanyrole
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
 
-            <flux:navlist variant="outline">
+            <!-- <flux:navlist variant="outline">
                 <flux:navlist.item
                     icon="folder-git-2"
                     href="https://github.com/laravel/livewire-starter-kit"
@@ -65,7 +75,7 @@
                 >
                     {{ __("Documentation") }}
                 </flux:navlist.item>
-            </flux:navlist>
+            </flux:navlist> -->
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">

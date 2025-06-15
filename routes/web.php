@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\UserController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -69,6 +70,7 @@ Route::view('dashboard', 'pages/dashboard/dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('schedules', ScheduleController::class);
+    Route::resource('users', UserController::class);
     Route::resource('leaves', LeaveController::class);
     Route::redirect('settings', 'settings/profile');
 
