@@ -22,7 +22,7 @@
                     <td class="px-6 py-4">{{ $schedule->creator->name ?? '-' }}</td>
                     <td class="px-6 py-4 text-center relative">
                         <div x-data="{ open: false }" class="relative inline-block text-left">
-                            <button @click="open = !open" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                            <button @click="open = !open" class="text-black focus:outline-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

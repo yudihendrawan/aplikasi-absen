@@ -1,117 +1,142 @@
 <x-layouts.app>
     <x-slot name="title">{{ __('Buat Jadwal Kunjungan') }}</x-slot>
 
+    <x-ui.breadcrumb :items="[['label' => 'Jadwal Sales', 'url' => route('schedules.index')], ['label' => 'Buat Jadwal']]" />
 
-    <h1 class="text-xl font-bold">Buat Jadwal Sales</h1>
-    <form action="{{ route('schedules.store') }}" method="POST"
-        class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md grid md:grid-cols-2 grid-cols-1 gap-4">
-        @csrf
-
-        {{-- Sales --}}
-        <div class="mb-4">
-            <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales</label>
-            <select name="user_id" id="user_id" class="tom-select w-full" required>
-                <option value="">Pilih Sales</option>
-                @foreach ($sales as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-                @endforeach
-            </select>
-            @error('user_id')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-            @enderror
+    {{-- Heading Card --}}
+    <div class="mb-6 p-5 bg-blue-50 dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg shadow-sm">
+        <div class="flex items-center gap-4">
+            <div>
+                <h2 class="text-lg font-semibold  dark:text-white">Buat Jadwal Kunjungan</h2>
+                <p class="text-sm  dark:text-gray-300">
+                    Atur jadwal kunjungan sales ke toko dan estimasi tagihan yang harus ditagih. Jadwal ini akan
+                    digunakan sebagai acuan absensi dan invoice.
+                </p>
+            </div>
         </div>
+    </div>
+    <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+        <form action="{{ route('schedules.store') }}" method="POST" class="p-4 grid md:grid-cols-2 grid-cols-1 gap-4">
+            @csrf
 
-        {{-- Tanggal --}}
-        <div class="mb-4">
-            <label for="visit_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal
-                Kunjungan</label>
-            <input type="date" id="visit_date" name="visit_date" required
-                class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('sales') border-red-500 @enderror"
-                value="{{ old('visit_date') }}">
+            {{-- Sales --}}
+            <div class="mb-4">
+                <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales</label>
+                <select name="user_id" id="user_id" class="tom-select w-full" required>
+                    <option value="">Pilih Sales</option>
+                    @foreach ($sales as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                    @endforeach
+                </select>
+                @error('user_id')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
 
-            @error('visit_date')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4 col-span-2">
-            <label for="time_tolerance" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Toleransi Keterlambatan (menit)
-            </label>
-            <input type="number" id="time_tolerance" name="time_tolerance" class="form-input w-32 rounded-lg"
-                placeholder="Contoh: 15" min="0" value="{{ old('time_tolerance', 15) }}">
-            @error('time_tolerance')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-            @enderror
-        </div>
+            {{-- Tanggal --}}
+            <div class="mb-4">
+                <label for="visit_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal
+                    Kunjungan</label>
+                <input type="date" id="visit_date" name="visit_date" required
+                    class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('sales') border-red-500 @enderror"
+                    value="{{ old('visit_date') }}">
 
-        {{-- Store list --}}
-        <div class="mb-4 col-span-2">
-            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih Toko & Estimasi
-                Tagihan</label>
-            <div id="store-list">
-                <div class="store-row flex gap-2 mb-2">
-                    <select name="stores[0][store_id]" class="tom-select w-full" required>
-                        <option value="">Pilih Toko</option>
-                        @foreach ($stores as $store)
-                            <option value="{{ $store->id }}">{{ $store->name }}</option>
-                        @endforeach
-                    </select>
-                    <div class="relative w-32">
-                        <input type="time" name="stores[0][checkin_time]" class="form-input rounded-lg  w-32 pl-10"
-                            placeholder="Check-in" required>
-                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
-                            <!-- Heroicon clock -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                @error('visit_date')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="mb-4 col-span-2">
+                <label for="time_tolerance" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Toleransi Keterlambatan (menit)
+                </label>
+                <input type="number" id="time_tolerance" name="time_tolerance" class="form-input w-32 rounded-lg"
+                    placeholder="Contoh: 15" min="0" value="{{ old('time_tolerance', 15) }}">
+                @error('time_tolerance')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <hr class="my-4 border-t border-gray-200 dark:border-gray-600 col-span-2">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300  mb-2">Toko & Estimasi Tagihan</h3>
+
+
+            {{-- Store list --}}
+            <div class="mb-4 col-span-2">
+                {{-- <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih Toko & Estimasi
+                    Tagihan</label> --}}
+                <div id="store-list">
+                    <div class="store-row flex gap-2 mb-2">
+                        <select name="stores[0][store_id]" class="tom-select w-full" required>
+                            <option value="">Pilih Toko</option>
+                            @foreach ($stores as $store)
+                                <option value="{{ $store->id }}">{{ $store->name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="relative w-32">
+                            <input type="time" name="stores[0][checkin_time]"
+                                class="form-input rounded-lg  w-32 pl-10" placeholder="Check-in" required>
+                            <div
+                                class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                                <!-- Heroicon clock -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="relative w-32">
-                        <input type="time" name="stores[0][checkout_time]" class="form-input rounded-lg w-32 pl-10"
-                            placeholder="Check-out" required>
-                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
-                            <!-- Heroicon clock -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                        <div class="relative w-32">
+                            <input type="time" name="stores[0][checkout_time]"
+                                class="form-input rounded-lg w-32 pl-10" placeholder="Check-out" required>
+                            <div
+                                class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                                <!-- Heroicon clock -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
                         </div>
+
+
+                        <input type="number" name="stores[0][expected_invoice_amount]" placeholder="Tagihan estimasi"
+                            class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
+                            step="0.01">
+                        <button type="button" onclick="removeStoreRow(this)"
+                            class="text-red-500 transition-all focus:scale-95 hover:scale-95 duration-200   cursor-pointer"
+                            title="Hapus">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h.293l.347 9.293A2 2 0 006.635 17h6.73a2 2 0 001.995-1.707L15.707 6H16a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM8 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
                     </div>
-
-
-                    <input type="number" name="stores[0][expected_invoice_amount]" placeholder="Tagihan estimasi"
-                        class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
-                        step="0.01">
-                    <button type="button" onclick="removeStoreRow(this)" class="text-red-500 cursor-pointer"
-                        title="Hapus">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h.293l.347 9.293A2 2 0 006.635 17h6.73a2 2 0 001.995-1.707L15.707 6H16a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM8 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
 
                 </div>
+                <button type="button" onclick="addStoreRow()"
+                    class="mt-2 bg-emerald-500 active:scale-95 transition-all duration-200 text-sm text-white px-4 py-2 rounded-lg cursor-pointer">+
+                    Tambah
+                    Toko</button>
 
+                @error('visit_date')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
             </div>
-            <button type="button" onclick="addStoreRow()"
-                class="mt-2 bg-emerald-500 text-sm text-white px-4 py-2 rounded-lg cursor-pointer">+ Tambah
-                Toko</button>
 
-            @error('visit_date')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div></div>
-        <div class="flex justify-end mt-4">
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan
-                Jadwal</button>
-        </div>
-    </form>
+            <div></div>
+            <div class="flex justify-end mt-4">
+                <button type="submit"
+                    class="bg-blue-600 transition-all  duration-200 active:scale-95 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan
+                    Jadwal</button>
+                <button type="button" onclick="window.location='{{ route('leaves.index') }}'"
+                    class="ml-2 transition-all focus:scale-95 hover:scale-95 duration-200 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Batal</button>
+            </div>
+        </form>
+    </section>
     @if ($errors->any())
         <script>
             window.formErrors = @json($errors->getMessages());
