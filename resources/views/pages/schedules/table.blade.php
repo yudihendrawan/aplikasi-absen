@@ -91,7 +91,7 @@
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                     <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                            Detail Kunjungan - {{ $schedule->sales->name }}
+                            Detail Jadwal - {{ $schedule->sales->name }}
                         </h3>
                         <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"

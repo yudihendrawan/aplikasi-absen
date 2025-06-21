@@ -155,7 +155,12 @@ class ScheduleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $schedule = Schedule::with(['sales', 'storeVisits.store'])->findOrFail($id);
+        $sales = User::role(['sales'])->get();
+        $stores = Store::all();
+
+
+        return view('pages.schedules.edit', compact('schedule', 'sales', 'stores'));
     }
 
     /**
@@ -163,14 +168,92 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Validasi input
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'visit_date' => 'required|date',
+            'stores' => 'required|array|min:1',
+            'time_tolerance' => 'required|integer|min:0',
+            'stores.*.store_id' => 'required|exists:stores,id',
+            'stores.*.expected_invoice_amount' => 'nullable|numeric|min:0',
+            'stores.*.checkin_time' => 'required|date_format:H:i',
+            'stores.*.checkout_time' => 'required|date_format:H:i|after_or_equal:stores.*.checkin_time',
+        ]);
+
+        $schedule = Schedule::findOrFail($id);
+
+        // Cek duplikat jadwal (kecuali schedule ini sendiri)
+        $duplicate = Schedule::where('user_id', $request->user_id)
+            ->whereDate('visit_date', $request->visit_date)
+            ->where('id', '!=', $schedule->id)
+            ->exists();
+
+        if ($duplicate) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Sales sudah memiliki jadwal kunjungan di tanggal tersebut.');
+        }
+
+        // Cek cuti
+        $leaveExists = Leave::where('user_id', $request->user_id)
+            ->whereDate('start_date', '<=', $request->visit_date)
+            ->whereDate('end_date', '>=', $request->visit_date)
+            ->exists();
+
+        if ($leaveExists) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Sales sudah mengajukan cuti pada tanggal tersebut.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update field utama
+            $schedule->update([
+                'user_id' => $request->user_id,
+                'visit_date' => $request->visit_date,
+                'time_tolerance' => $request->time_tolerance,
+                'updated_by' => auth()->user()->id,
+            ]);
+
+            // Hapus kunjungan lama
+            $schedule->storeVisits()->delete();
+
+            // Buat kunjungan baru
+            foreach ($request->stores as $store) {
+                $checkin  = $request->visit_date . ' ' . $store['checkin_time'] . ':00';
+                $checkout = $request->visit_date . ' ' . $store['checkout_time'] . ':00';
+
+                ScheduleStoreVisit::create([
+                    'schedule_id'             => $schedule->id,
+                    'store_id'                => $store['store_id'],
+                    'checkin_time'            => $checkin,
+                    'checkout_time'           => $checkout,
+                    'expected_invoice_amount' => $store['expected_invoice_amount'] ?? 0,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('schedules.index')
+                ->with('success', 'Jadwal berhasil diperbarui.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            if (app()->environment('local')) {
+                dd($th->getMessage());
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui jadwal.');
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $schedule)
     {
-        //
+        $schedule = Schedule::find($schedule)->delete();
+
+        return redirect()->route('schedules.index')->with('success', 'Jadwal berhasil di hapus.');
     }
 }
