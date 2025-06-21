@@ -76,7 +76,8 @@
                     Peta Lokasi <span class="text-red-500">*</span>
                 </label>
                 <div id="map" class="w-full h-64 rounded-lg border"></div>
-                <button type="button" id="locate-btn" class="mt-2 text-sm text-blue-600 hover:underline">Gunakan lokasi
+                <button type="button" id="locate-btn"
+                    class="mt-2 active:scale-95 transition-all text-sm text-blue-600 hover:underline">Gunakan lokasi
                     saat ini</button>
                 <div class="mt-2 flex gap-2">
                     <div class="flex-1">
@@ -114,9 +115,9 @@
             <div></div>
             <div class="flex items-center justify-end col-span-2">
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-all duration-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Simpan</button>
+                    class="text- active:scale-95 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-all dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Simpan</button>
                 <button type="button" onclick="window.location='{{ route('stores.index') }}'"
-                    class="ml-2 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-all duration-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Batal</button>
+                    class="ml-2 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-all active:scale-95  dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Batal</button>
             </div>
         </form>
     </section>

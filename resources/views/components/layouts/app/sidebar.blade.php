@@ -46,14 +46,6 @@
                     </flux:navlist.item>
                     @role('admin')
                     <flux:navlist.item
-                        icon="users"
-                        :href="route('users.index')"
-                        :current="request()->routeIs('users.*')"
-                        wire:navigate
-                    >
-                        {{ __("Karyawan") }}
-                    </flux:navlist.item>
-                    <flux:navlist.item
                         icon="shopping-bag"
                         :href="route('stores.index')"
                         :current="request()->routeIs('stores.*')"
@@ -61,6 +53,15 @@
                     >
                         {{ __("Toko") }}
                     </flux:navlist.item>
+                    <flux:navlist.item
+                        icon="users"
+                        :href="route('users.index')"
+                        :current="request()->routeIs('users.*')"
+                        wire:navigate
+                    >
+                        {{ __("Karyawan") }}
+                    </flux:navlist.item>
+
                     @endrole @hasanyrole('admin|manager') @endhasanyrole
                 </flux:navlist.group>
             </flux:navlist>

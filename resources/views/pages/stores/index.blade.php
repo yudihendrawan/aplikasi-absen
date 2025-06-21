@@ -36,13 +36,13 @@
 
             <div>
                 <button type="submit"
-                    class="text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">
+                    class="text-white active:scale-95 transition-all focus:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">
                     Filter
                 </button>
             </div>
             <div class="ml-auto">
                 <button type="button" onclick="window.location.href = '{{ route('stores.create') }}'"
-                    class="text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    class="text-white transition-all focus:scale-95 active:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
                     Tambah
                 </button>
             </div>

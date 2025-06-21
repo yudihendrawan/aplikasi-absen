@@ -62,7 +62,8 @@
                 <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Peta Lokasi <span
                         class="text-red-500">*</span></label>
                 <div id="map" class="w-full h-64 rounded-lg border"></div>
-                <button type="button" id="locate-btn" class="mt-2 text-sm text-blue-600 hover:underline">Gunakan lokasi
+                <button type="button" id="locate-btn"
+                    class="mt-2 active:scale-95 transition-all text-sm text-blue-600 hover:underline">Gunakan lokasi
                     saat ini</button>
                 <div class="mt-2 flex gap-2">
                     <div class="flex-1">
@@ -82,7 +83,7 @@
 
             <div class="flex items-center justify-end col-span-2">
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">Update</button>
+                    class="text-white bg-blue-700 active:scale-95 transition-all hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">Update</button>
                 <a href="{{ route('stores.index') }}"
                     class="ml-2 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">Batal</a>
             </div>

@@ -21,7 +21,8 @@
                     </td>
                     <td class="px-6 py-4 text-center relative">
                         <div x-data="{ open: false }" class="relative inline-block text-left">
-                            <button @click="open = !open" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                            <button @click="open = !open"
+                                class="text-gray-500 active:scale-95 transition-all hover:text-gray-700 focus:outline-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -39,7 +40,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        class="w-full active:scale-95 transition-all text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
                                         Hapus
                                     </button>
                                 </form>
