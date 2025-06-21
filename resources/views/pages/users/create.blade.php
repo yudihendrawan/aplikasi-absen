@@ -17,7 +17,8 @@
 
                 <div class="mb-4">
                     <label for="name"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Nama Karyawan') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Nama Karyawan') }}
+                        <span class="text-red-500">*</span></label>
                     <input type="text" id="name" name="name" required
                         class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('name') border-red-500 @enderror"
                         placeholder="{{ __('Masukkan nama karyawan') }}" value="{{ old('name') }}">
@@ -28,7 +29,8 @@
 
                 <div class="mb-4">
                     <label for="email"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Email Karyawan') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Email Karyawan') }}
+                        <span class="text-red-500">*</span></label>
                     <input type="email" id="email" name="email" required
                         class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('email') border-red-500 @enderror"
                         placeholder="{{ __('Masukkan email karyawan') }}" value="{{ old('email') }}">
@@ -50,7 +52,8 @@
 
                 <div class="mb-4">
                     <label for="password"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Password') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Password') }} <span
+                            class="text-red-500">*</span></label>
                     <div class="relative">
                         <input type="password" id="password" name="password" required
                             class="form-input block w-full pr-10 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('password') border-red-500 @enderror"
@@ -84,7 +87,8 @@
 
                 <div class="mb-4">
                     <label for="role"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Role') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Role') }} <span
+                            class="text-red-500">*</span></label>
                     <select id="role" name="role" required
                         class="form-select block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         @foreach ($roles as $role)

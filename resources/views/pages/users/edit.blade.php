@@ -12,7 +12,8 @@
 
                 <div class="mb-4">
                     <label for="name"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Nama Karyawan') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Nama Karyawan') }}
+                        <span class="text-red-500">*</span></label>
                     <input type="text" id="name" name="name" required
                         class="form-input block w-full rounded-lg border text-gray-900 text-sm @error('name') border-red-500 @enderror"
                         placeholder="{{ __('Masukkan nama karyawan') }}" value="{{ old('name', $user->name) }}">
@@ -23,7 +24,8 @@
 
                 <div class="mb-4">
                     <label for="email"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Email Karyawan') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Email Karyawan') }}
+                        <span class="text-red-500">*</span></label>
                     <input type="email" id="email" name="email" required
                         class="form-input block w-full rounded-lg border text-gray-900 text-sm @error('email') border-red-500 @enderror"
                         placeholder="{{ __('Masukkan email karyawan') }}" value="{{ old('email', $user->email) }}">
@@ -34,7 +36,8 @@
 
                 <div class="mb-4">
                     <label for="phone"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('No. Handphone Karyawan') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('No. Handphone Karyawan') }}
+                    </label>
                     <input type="tel" id="phone" name="phone" required pattern="[0-9]{10,14}"
                         inputmode="numeric"
                         class="form-input block w-full rounded-lg border text-gray-900 text-sm @error('phone') border-red-500 @enderror"
@@ -77,7 +80,8 @@
 
                 <div class="mb-4">
                     <label for="role"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Role') }}</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Role') }} <span
+                            class="text-red-500">*</span></label>
                     <select id="role" name="role" required
                         class="form-select block w-full rounded-lg border text-gray-900 text-sm dark:bg-gray-700 dark:text-white">
                         @foreach ($roles as $role)

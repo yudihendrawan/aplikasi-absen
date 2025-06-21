@@ -16,7 +16,7 @@ class ScheduleController extends Controller
      * Display a listing of the resource.
      */ public function index(Request $request)
     {
-        $query = Schedule::with(['sales', 'store', 'creator']);
+        $query = Schedule::with(['sales',  'storeVisits', 'creator']);
 
         if ($search = $request->input('search')) {
             $query->whereHas('sales', fn($q) => $q->where('name', 'like', "%$search%"))
@@ -73,6 +73,7 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'visit_date' => 'required|date',
@@ -83,6 +84,17 @@ class ScheduleController extends Controller
             'stores.*.checkin_time' => 'required|date_format:H:i',
             'stores.*.checkout_time' => 'required|date_format:H:i|after_or_equal:stores.*.checkin_time',
         ]);
+
+        $duplicateSchedule = Schedule::where('user_id', $request->user_id)
+            ->whereDate('visit_date', $request->visit_date)
+            ->exists();
+
+        if ($duplicateSchedule) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Sales sudah memiliki jadwal kunjungan di tanggal tersebut.');
+        }
+
 
         $leaveExists = Leave::where('user_id', $request->user_id)
             ->whereDate('start_date', '<=', $request->visit_date)

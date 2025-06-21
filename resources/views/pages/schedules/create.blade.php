@@ -21,7 +21,8 @@
 
             {{-- Sales --}}
             <div class="mb-4">
-                <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales</label>
+                <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales <span
+                        class="text-red-500">*</span></label>
                 <select name="user_id" value="{{ old('user_id') }}" id="user_id" class="tom-select w-full" required>
                     <option value="">Pilih Sales</option>
                     @foreach ($sales as $user)
@@ -39,7 +40,7 @@
             {{-- Tanggal --}}
             <div class="mb-4">
                 <label for="visit_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal
-                    Kunjungan</label>
+                    Kunjungan <span class="text-red-500">*</span></label>
                 <input type="date" id="visit_date" name="visit_date" required
                     class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('sales') border-red-500 @enderror"
                     value="{{ old('visit_date') }}">
@@ -50,7 +51,7 @@
             </div>
             <div class="mb-4 col-span-2">
                 <label for="time_tolerance" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Toleransi Keterlambatan (menit)
+                    Toleransi Keterlambatan (menit) <span class="text-red-500">*</span>
                 </label>
                 <input type="number" id="time_tolerance" name="time_tolerance" class="form-input w-32 rounded-lg"
                     placeholder="Contoh: 15" min="0" value="{{ old('time_tolerance', 15) }}">
@@ -60,7 +61,8 @@
             </div>
 
             <hr class="my-4 border-t border-gray-200 dark:border-gray-600 col-span-2">
-            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300  mb-2">Toko & Estimasi Tagihan</h3>
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300  mb-2">Toko & Estimasi Tagihan <span
+                    class="text-red-500">*</span> </h3>
 
 
             {{-- Store list --}}
@@ -108,10 +110,14 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <input type="number" name="stores[{{ $index }}][expected_invoice_amount]"
-                                    class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
-                                    value="{{ $store['expected_invoice_amount'] ?? '' }}"
-                                    placeholder="Estimasi tagihan" step="0.01">
+                                <input type="text" name="stores[{{ $index }}][expected_invoice_amount]"
+                                    class="form-input currency-format  block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
+                                    value="{{ old('stores.' . $index . '.expected_invoice_amount') ? number_format(old('stores.' . $index . '.expected_invoice_amount'), 0, ',', '.') : '' }}"
+                                    data-hidden-input="amount-{{ $index }}"
+                                    placeholder="Estimasi tagihan (Opsional)" step="0.01">
+                                <input type="hidden" name="stores[{{ $index }}][expected_invoice_amount]"
+                                    id="amount-{{ $index }}"
+                                    value="{{ old('stores.' . $index . '.expected_invoice_amount') }}">
                                 <button type="button" onclick="removeStoreRow(this)"
                                     class="text-red-500 cursor-pointer" title="Hapus">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor"
@@ -157,9 +163,11 @@
                                     </svg>
                                 </div>
                             </div>
-                            <input type="number" name="stores[0][expected_invoice_amount]"
-                                class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
-                                placeholder="Estimasi tagihan" step="0.01">
+                            <input type="text" name="stores[0][expected_invoice_amount]"
+                                class="form-input currency-format  block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
+                                placeholder="Estimasi tagihan (Opsional)" step="0.01"
+                                data-hidden-input="amount-0">
+                            <input type="hidden" name="stores[0][expected_invoice_amount]" id="amount-0">
                             <button type="button" onclick="removeStoreRow(this)" class="text-red-500 cursor-pointer"
                                 title="Hapus">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor"
@@ -203,9 +211,47 @@
     <script>
         let storeIndex = {{ old('stores') ? count(old('stores')) : 1 }};
 
+        function formatRupiah(angka, prefix = 'Rp ') {
+            if (!angka) return '';
+            angka = angka.replace(/[^,\d]/g, '');
+
+            const split = angka.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                const separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+            return prefix + rupiah;
+        }
+
+        function setupCurrencyFormat(input) {
+            input.addEventListener('input', function() {
+                const raw = this.value.replace(/[^0-9]/g, '');
+                const formatted = formatRupiah(raw);
+
+                this.value = formatted;
+
+                const hiddenId = this.dataset.hiddenInput;
+                if (hiddenId) {
+                    const hiddenInput = document.getElementById(hiddenId);
+                    if (hiddenInput) {
+                        hiddenInput.value = raw;
+                    }
+                }
+            });
+        }
+
+
         function addStoreRow() {
             const container = document.getElementById('store-list');
             const row = document.createElement('div');
+            setupCurrencyFormat(row.querySelector('.currency-format'));
+
             row.className = 'store-row flex gap-2 mb-2';
             row.innerHTML = `
                 <select name="stores[${storeIndex}][store_id]" class="tom-select w-full" required>
@@ -229,6 +275,7 @@
                     <div class="relative w-32">
                         <input type="time" name="stores[${storeIndex}][checkout_time]" class="form-input rounded-lg w-32 pl-10"
                             placeholder="Check-out" required>
+                            
                         <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
                             <!-- Heroicon clock -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -239,8 +286,11 @@
                         </div>
                     </div>
                  
-                <input type="number" name="stores[${storeIndex}][expected_invoice_amount]" placeholder="Estimasi tagihan" 
-                        class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror">
+                <input type="text" name="stores[${storeIndex}][expected_invoice_amount]" placeholder="Estimasi tagihan (Opsional)" 
+                        class="form-input currency-format  block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"   data-hidden-input="amount-${storeIndex}">
+                        <input type="hidden"
+         name="stores[${storeIndex}][expected_invoice_amount]"
+       id="amount-${storeIndex}">
                <button type="button" onclick="removeStoreRow(this)" class="text-red-500 cursor-pointer" title="Hapus">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -260,7 +310,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-
+            document.querySelectorAll('.currency-format').forEach(setupCurrencyFormat);
             // date picker
             const startInput = document.getElementById('visit_date');
             flatpickr(startInput, {

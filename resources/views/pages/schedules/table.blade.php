@@ -12,9 +12,10 @@
         </thead>
         <tbody>
             @forelse ($schedules as $schedule)
+                <?php $totalStoreVisits = $schedule->storeVisits->count(); ?>
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <td class="px-6 py-4">{{ $schedule->sales->name ?? '-' }}</td>
-                    <td class="px-6 py-4">{{ $schedule->store->name ?? '-' }}</td>
+                    <td class="px-6 py-4">{{ $totalStoreVisits . ' kunjungan' ?? '-' }}</td>
                     <td class="px-6 py-4">
                         {{ \Carbon\Carbon::parse($schedule->visit_date)->translatedFormat('d F Y') }}
                     </td>
@@ -29,10 +30,9 @@
                                         d="M12 6v.01M12 12v.01M12 18v.01" />
                                 </svg>
                             </button>
+
                             <div x-show="open" @click.away="open = false" x-transition
-                                class="fixed z-50 mt-2 w-32 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-md shadow-lg"
-                                :style="'top: ' + ($el.getBoundingClientRect().top + window.scrollY) + 'px; left: ' + ($el
-                                    .getBoundingClientRect().left + window.scrollX - 96) + 'px;'">
+                                class="absolute right-0 mt-2 w-32 z-50 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-md shadow-lg">
                                 <a href="{{ route('schedules.edit', $schedule->id) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     Edit
@@ -40,7 +40,6 @@
                                 <button type="button" data-modal-target="scheduleModal-{{ $schedule->id }}"
                                     data-modal-toggle="scheduleModal-{{ $schedule->id }}"
                                     class="block px-4 text-left w-full py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    {{-- onclick="showScheduleModal({{ $schedule->id }})"> --}}
                                     Lihat Detail
                                 </button>
 
@@ -56,6 +55,7 @@
                             </div>
                         </div>
                     </td>
+
                 </tr>
             @empty
                 <tr>
@@ -87,7 +87,7 @@
     @foreach ($schedules as $schedule)
         <div id="scheduleModal-{{ $schedule->id }}" tabindex="-1" aria-hidden="true"
             class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative w-full max-w-2xl max-h-full">
+            <div class="relative w-full max-w-[90vw] h-[90vh]">
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                     <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -112,12 +112,16 @@
                             <p class="text-gray-500 dark:text-gray-300">Tidak ada kunjungan toko.</p>
                         @else
                             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
-                                <thead class="bg-gray-100 dark:bg-gray-700">
+                                <thead class="bg-gray-100 dark:bg-gray-700 text-nowrap">
                                     <tr>
                                         <th class="px-4 py-2">Toko</th>
-                                        <th class="px-4 py-2">Check-in</th>
-                                        <th class="px-4 py-2">Check-out</th>
+                                        <th class="px-4 py-2">Jadwal Check-in</th>
+                                        <th class="px-4 py-2">Jadwal Check-out</th>
+                                        <th class="px-4 py-2">Absen Check-in </th>
+                                        <th class="px-4 py-2">Absen Check-out</th>
                                         <th class="px-4 py-2">Estimasi Tagihan</th>
+                                        <th class="px-4 py-2">Tagihan yang Terbayar</th>
+                                        <th class="px-4 py-2">Catatan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,9 +130,15 @@
                                             <td class="px-4 py-2">{{ $visit->store->name }}</td>
                                             <td class="px-4 py-2">{{ $visit->checkin_time ?? '-' }}</td>
                                             <td class="px-4 py-2">{{ $visit->checkout_time ?? '-' }}</td>
+                                            <td class="px-4 py-2">{{ '-' }}</td>
+                                            <td class="px-4 py-2">{{ '-' }}</td>
                                             <td class="px-4 py-2">Rp
                                                 {{ number_format($visit->expected_invoice_amount ?? 0, 0, ',', '.') }}
                                             </td>
+                                            <td class="px-4 py-2">Rp
+                                                {{ number_format($visit->expected_invoice_amount ?? 0, 0, ',', '.') }}
+                                            </td>
+                                            <td class="px-4 py-2">{{ '-' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

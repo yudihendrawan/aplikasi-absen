@@ -23,7 +23,8 @@
         <form action="{{ route('leaves.store') }}" method="POST" class=" grid md:grid-cols-2 grid-cols-1 gap-4 mb-4">
             @csrf
             <div class="mb-4">
-                <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales</label>
+                <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales <span
+                        class="text-red-500">*</span></label>
                 <select id="user_id" name="user_id" required
                     class="tom-select w-full @error('user_id') border-red-500 @enderror">
                     <option value="">Pilih Sales</option>
@@ -43,7 +44,8 @@
 
             <div class="mb-4 ">
                 <label for="name"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Leave Name') }}</label>
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Leave Name') }} <span
+                        class="text-red-500">*</span></label>
                 <input type="text" id="name" name="name" required
                     class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('name') border-red-500 @enderror"
                     placeholder="{{ __('Masukkan nama izin') }}" value="{{ old('name') }}">
@@ -53,7 +55,8 @@
             </div>
             <div class="mb-4">
                 <label for="start_date"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Start Date') }}</label>
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Start Date') }} <span
+                        class="text-red-500">*</span></label>
                 <input type="date" id="start_date" name="start_date" required
                     class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('start_date') border-red-500 @enderror"
                     value="{{ old('start_date') }}">
@@ -63,7 +66,8 @@
             </div>
             <div class="mb-4">
                 <label for="end_date"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('End Date') }}</label>
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('End Date') }} <span
+                        class="text-red-500">*</span></label>
                 <input type="date" id="end_date" name="end_date" required
                     class="form-input block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('end_date') border-red-500 @enderror"
                     value="{{ old('end_date') }}">
@@ -73,7 +77,8 @@
             </div>
             <div class="mb-4">
                 <label for="reason"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Reason') }}</label>
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Reason') }} <span
+                        class="text-red-500">*</span></label>
                 <textarea id="reason" name="reason" rows="3" required
                     class="form-textarea block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('reason') border-red-500 @enderror"
                     placeholder="{{ __('Masukkan alasan cuti / izin') }}">{{ old('reason') }}</textarea>
