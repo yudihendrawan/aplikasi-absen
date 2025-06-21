@@ -37,13 +37,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->assignRole('admin');
-        Present::factory(20)->create();
-        Leave::factory(10)->create();
-        Schedule::factory(30)->create([
-            'created_by' => $user->id,
-        ]);
+        // Present::factory(20)->create();
+        // Leave::factory(10)->create();
+        // Schedule::factory(30)->create([
+        //     'created_by' => $user->id,
+        // ]);
 
-        Invoice::factory(10)->create();
-        InvoicePayment::factory(15)->create();
+        // Invoice::factory(10)->create();
+        // InvoicePayment::factory(15)->create();
     }
 }

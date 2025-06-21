@@ -6,16 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Present extends Model
+class Attendance extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'user_id',
-        'store_id',
-        'longitude',
+        'id',
+        'schedule_store_visit_id',
+        'attended_at',
+        'actual_invoice_amount',
+        'note',
         'latitude',
-        'status',
-        'date',
+        'longitude',
         'device_info',
         'check_in_ip',
         'check_out_ip',
@@ -23,13 +25,8 @@ class Present extends Model
         'check_out_time',
     ];
 
-    public function user(): BelongsTo
+    public function storeVisit(): BelongsTo
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function store(): BelongsTo
-    {
-        return $this->belongsTo(Store::class);
+        return $this->belongsTo(ScheduleStoreVisit::class, 'schedule_store_visit_id');
     }
 }

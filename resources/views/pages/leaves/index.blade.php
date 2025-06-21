@@ -1,4 +1,31 @@
-<x-layouts.app :title="__('Izin Karyawan')">
+<x-layouts.app :title="__('Izin Sales')">
+    <x-ui.breadcrumb :items="[['label' => 'Jadwal Izin']]" />
+
+    {{-- Heading Card --}}
+    <div class="mb-6 p-5 bg-blue-50 dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg shadow-sm">
+        <div class="flex items-center gap-4">
+            {{-- calendar-x-2 --}}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-calendar-x2-icon lucide-calendar-x-2">
+                <path d="M8 2v4" />
+                <path d="M16 2v4" />
+                <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" />
+                <path d="M3 10h18" />
+                <path d="m17 22 5-5" />
+                <path d="m17 17 5 5" />
+            </svg>
+            <div>
+                <h2 class="text-lg font-semibold  dark:text-white">Manajemen Jadwal Izin</h2>
+                <p class="text-sm  dark:text-gray-300">
+                    Halaman ini berisi daftar dan pengaturan jadwal izin sales.
+                    Gunakan filter untuk mencari berdasarkan nama, tanggal, atau waktu izin.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
     <div class="overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800 p-4">
         <h1 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Izin Karyawan</h1>
         <form method="GET" action="{{ route('leaves.index') }}" class="mb-4 flex flex-wrap w-full gap-4 items-end">
@@ -46,14 +73,14 @@
 
             <div>
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">
+                    class="text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700">
                     Filter
                 </button>
             </div>
             <div class="ml-auto">
                 <button type="button" onclick="window.location.href = '{{ route('leaves.create') }}'"
-                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
-                    {{ __('Create') }}
+                    class="text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    Tambah
                 </button>
             </div>
         </form>
