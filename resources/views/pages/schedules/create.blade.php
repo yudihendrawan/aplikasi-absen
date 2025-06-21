@@ -22,9 +22,12 @@
             {{-- Sales --}}
             <div class="mb-4">
                 <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales</label>
-                <select name="user_id" id="user_id" class="tom-select w-full" required>
+                <select name="user_id" value="{{ old('user_id') }}" id="user_id" class="tom-select w-full" required>
                     <option value="">Pilih Sales</option>
                     @foreach ($sales as $user)
+                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                            {{ $user->name }} ({{ $user->email }})
+                        </option>
                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                     @endforeach
                 </select>
@@ -65,58 +68,112 @@
                 {{-- <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih Toko & Estimasi
                     Tagihan</label> --}}
                 <div id="store-list">
-                    <div class="store-row flex gap-2 mb-2">
-                        <select name="stores[0][store_id]" class="tom-select w-full" required>
-                            <option value="">Pilih Toko</option>
-                            @foreach ($stores as $store)
-                                <option value="{{ $store->id }}">{{ $store->name }}</option>
-                            @endforeach
-                        </select>
-                        <div class="relative w-32">
-                            <input type="time" name="stores[0][checkin_time]"
-                                class="form-input rounded-lg  w-32 pl-10" placeholder="Check-in" required>
-                            <div
-                                class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
-                                <!-- Heroicon clock -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                    @php $storeIndex = 0; @endphp
+                    @if (old('stores'))
+                        @foreach (old('stores') as $index => $store)
+                            <div class="store-row flex gap-2 mb-2">
+                                <select name="stores[{{ $index }}][store_id]" class="tom-select w-full"
+                                    required>
+                                    <option value="">Pilih Toko</option>
+                                    @foreach ($stores as $storeOption)
+                                        <option value="{{ $storeOption->id }}"
+                                            {{ $storeOption->id == $store['store_id'] ? 'selected' : '' }}>
+                                            {{ $storeOption->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="relative w-32">
+                                    <input type="time" name="stores[{{ $index }}][checkin_time]"
+                                        class="form-input rounded-lg w-32 pl-10" value="{{ $store['checkin_time'] }}"
+                                        required>
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="relative w-32">
+                                    <input type="time" name="stores[{{ $index }}][checkout_time]"
+                                        class="form-input rounded-lg w-32 pl-10" value="{{ $store['checkout_time'] }}"
+                                        required>
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <input type="number" name="stores[{{ $index }}][expected_invoice_amount]"
+                                    class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
+                                    value="{{ $store['expected_invoice_amount'] ?? '' }}"
+                                    placeholder="Estimasi tagihan" step="0.01">
+                                <button type="button" onclick="removeStoreRow(this)"
+                                    class="text-red-500 cursor-pointer" title="Hapus">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h.293l.347 9.293A2 2 0 006.635 17h6.73a2 2 0 001.995-1.707L15.707 6H16a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM8 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
-                        </div>
-                        <div class="relative w-32">
-                            <input type="time" name="stores[0][checkout_time]"
-                                class="form-input rounded-lg w-32 pl-10" placeholder="Check-out" required>
-                            <div
-                                class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
-                                <!-- Heroicon clock -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                            @php $storeIndex = $index + 1; @endphp
+                        @endforeach
+                    @else
+                        {{-- Default 1 row jika tidak ada old --}}
+                        <div class="store-row flex gap-2 mb-2">
+                            <select name="stores[0][store_id]" class="tom-select w-full" required>
+                                <option value="">Pilih Toko</option>
+                                @foreach ($stores as $store)
+                                    <option value="{{ $store->id }}">{{ $store->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="relative w-32">
+                                <input type="time" name="stores[0][checkin_time]"
+                                    class="form-input rounded-lg w-32 pl-10" required>
+                                <div
+                                    class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
                             </div>
+                            <div class="relative w-32">
+                                <input type="time" name="stores[0][checkout_time]"
+                                    class="form-input rounded-lg w-32 pl-10" required>
+                                <div
+                                    class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <input type="number" name="stores[0][expected_invoice_amount]"
+                                class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
+                                placeholder="Estimasi tagihan" step="0.01">
+                            <button type="button" onclick="removeStoreRow(this)" class="text-red-500 cursor-pointer"
+                                title="Hapus">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h.293l.347 9.293A2 2 0 006.635 17h6.73a2 2 0 001.995-1.707L15.707 6H16a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM8 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
                         </div>
-
-
-                        <input type="number" name="stores[0][expected_invoice_amount]" placeholder="Tagihan estimasi"
-                            class="form-input block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"
-                            step="0.01">
-                        <button type="button" onclick="removeStoreRow(this)"
-                            class="text-red-500 transition-all focus:scale-95 hover:scale-95 duration-200   cursor-pointer"
-                            title="Hapus">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h.293l.347 9.293A2 2 0 006.635 17h6.73a2 2 0 001.995-1.707L15.707 6H16a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM8 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-
-                    </div>
-
+                        @php $storeIndex = 1; @endphp
+                    @endif
                 </div>
+
                 <button type="button" onclick="addStoreRow()"
                     class="mt-2 bg-emerald-500 active:scale-95 transition-all duration-200 text-sm text-white px-4 py-2 rounded-lg cursor-pointer">+
                     Tambah
@@ -132,7 +189,7 @@
                 <button type="submit"
                     class="bg-blue-600 transition-all  duration-200 active:scale-95 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan
                     Jadwal</button>
-                <button type="button" onclick="window.location='{{ route('leaves.index') }}'"
+                <button type="button" onclick="window.location='{{ route('schedules.index') }}'"
                     class="ml-2 transition-all focus:scale-95 hover:scale-95 duration-200 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Batal</button>
             </div>
         </form>
@@ -144,7 +201,7 @@
     @endif
 
     <script>
-        let storeIndex = 1;
+        let storeIndex = {{ old('stores') ? count(old('stores')) : 1 }};
 
         function addStoreRow() {
             const container = document.getElementById('store-list');

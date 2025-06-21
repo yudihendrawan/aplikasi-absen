@@ -1,4 +1,4 @@
-<div id="schedule-table">
+<div id="schedule-table" class="overflow-visible">
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-200">
             <tr>
@@ -30,7 +30,9 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" x-transition
-                                class="absolute right-0 z-10 mt-2 w-32 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-md shadow-lg">
+                                class="fixed z-50 mt-2 w-32 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 rounded-md shadow-lg"
+                                :style="'top: ' + ($el.getBoundingClientRect().top + window.scrollY) + 'px; left: ' + ($el
+                                    .getBoundingClientRect().left + window.scrollX - 96) + 'px;'">
                                 <a href="{{ route('schedules.edit', $schedule->id) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     Edit

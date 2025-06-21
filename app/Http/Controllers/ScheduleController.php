@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Leave;
 use App\Models\Schedule;
 use App\Models\ScheduleStoreVisit;
 use App\Models\Store;
@@ -83,7 +84,17 @@ class ScheduleController extends Controller
             'stores.*.checkout_time' => 'required|date_format:H:i|after_or_equal:stores.*.checkin_time',
         ]);
 
+        $leaveExists = Leave::where('user_id', $request->user_id)
+            ->whereDate('start_date', '<=', $request->visit_date)
+            ->whereDate('end_date', '>=', $request->visit_date)
+            ->exists();
 
+
+        if ($leaveExists) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Sales sudah mengajukan cuti pada tanggal tersebut.');
+        }
         DB::beginTransaction();
         try {
             // Simpan jadwal utama
