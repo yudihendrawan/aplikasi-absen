@@ -53,6 +53,14 @@
                     >
                         {{ __("Karyawan") }}
                     </flux:navlist.item>
+                    <flux:navlist.item
+                        icon="shopping-bag"
+                        :href="route('stores.index')"
+                        :current="request()->routeIs('stores.*')"
+                        wire:navigate
+                    >
+                        {{ __("Toko") }}
+                    </flux:navlist.item>
                     @endrole @hasanyrole('admin|manager') @endhasanyrole
                 </flux:navlist.group>
             </flux:navlist>

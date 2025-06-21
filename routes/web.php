@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -72,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('schedules', ScheduleController::class);
     Route::resource('users', UserController::class);
     Route::resource('leaves', LeaveController::class);
+    Route::resource('stores', StoreController::class);
     Route::redirect('settings', 'settings/profile');
     Route::get('/schedules/{schedule}/visits', [ScheduleController::class, 'showVisits']);
 
