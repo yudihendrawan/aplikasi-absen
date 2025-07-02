@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StoreController;
@@ -74,6 +75,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('leaves', LeaveController::class);
     Route::resource('stores', StoreController::class);
+    // web.php
+    Route::get('/attendances/calendar', [AttendanceController::class, 'calendar'])->name('attendances.calendar');
+
     Route::redirect('settings', 'settings/profile');
     Route::get('/schedules/{schedule}/visits', [ScheduleController::class, 'showVisits']);
 

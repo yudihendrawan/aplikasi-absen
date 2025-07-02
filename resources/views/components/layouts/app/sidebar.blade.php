@@ -29,6 +29,15 @@
                         >{{ __("Dashboard") }}</flux:navlist.item
                     >
                     <flux:navlist.item
+                        icon="clipboard-document-list"
+                        :href="route('attendances.index')"
+                        :current="request()->routeIs('attendances.*')"
+                        wire:navigate
+                    >
+                        {{ __("Absen") }}
+                    </flux:navlist.item>
+
+                    <flux:navlist.item
                         icon="calendar"
                         :href="route('schedules.index')"
                         :current="request()->routeIs('schedules.*')"

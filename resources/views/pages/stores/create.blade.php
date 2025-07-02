@@ -144,8 +144,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const latInput = document.getElementById('latitude');
             const lngInput = document.getElementById('longitude');
-            const defaultLat = latInput.value || -6.200000;
-            const defaultLng = lngInput.value || 106.816666;
+            let defaultLat = parseFloat(latInput.value) || -6.200000;
+            let defaultLng = parseFloat(lngInput.value) || 106.816666;
 
             const map = L.map('map', {
                 fullscreenControl: true
@@ -159,69 +159,83 @@
                 draggable: true
             }).addTo(map);
 
-            // Update inputs saat marker dipindah
+            // Fungsi untuk update marker dan input
+            const updateMarker = (lat, lng) => {
+                marker.setLatLng([lat, lng]);
+                map.setView([lat, lng], 15);
+                latInput.value = lat.toFixed(8);
+                lngInput.value = lng.toFixed(8);
+            };
+
+            // Ambil lokasi awal secara otomatis (presisi tinggi)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
+                        const {
+                            latitude,
+                            longitude
+                        } = pos.coords;
+                        console.log('Posisi awal:', latitude, longitude);
+                        updateMarker(latitude, longitude);
+                    },
+                    err => {
+                        console.warn('Gagal ambil posisi awal:', err.message);
+                    }, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            }
+
+            // Drag marker → update input
             marker.on('dragend', () => {
                 const {
                     lat,
                     lng
                 } = marker.getLatLng();
-                latInput.value = lat.toFixed(8);
-                lngInput.value = lng.toFixed(8);
-                map.setView([lat, lng]);
+                updateMarker(lat, lng);
             });
 
-            // Jika klik peta, pindahkan marker
+            // Klik peta → pindah marker
             map.on('click', e => {
-                marker.setLatLng(e.latlng);
-                latInput.value = e.latlng.lat.toFixed(8);
-                lngInput.value = e.latlng.lng.toFixed(8);
+                updateMarker(e.latlng.lat, e.latlng.lng);
             });
 
-            // Geocode search
+            // Geocoder
             const geocoder = L.Control.geocoder({
                 defaultMarkGeocode: false
             }).addTo(map);
 
             geocoder.on('markgeocode', e => {
                 const center = e.geocode.center;
-                marker.setLatLng(center);
-                map.setView(center, 15);
-                latInput.value = center.lat.toFixed(8);
-                lngInput.value = center.lng.toFixed(8);
+                updateMarker(center.lat, center.lng);
             });
 
-            // Bind search input
-            const searchInput = document.getElementById('geocoder');
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    geocoder.markGeocode(L.Control.Geocoder.nominatim().geocode(searchInput.value,
-                        results => {
-                            if (results && results.length) {
-                                geocoder.fire('markgeocode', {
-                                    geocode: results[0]
-                                });
-                            }
-                        }));
-                }
-            });
-
-            // Geolocation
+            // Tombol "Gunakan Lokasi Saat Ini"
             document.getElementById('locate-btn').addEventListener('click', () => {
                 if (!navigator.geolocation) {
                     alert('Geolokasi tidak didukung browser Anda');
-                } else {
-                    navigator.geolocation.getCurrentPosition(pos => {
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
                         const {
                             latitude,
                             longitude
                         } = pos.coords;
-                        marker.setLatLng([latitude, longitude]);
-                        map.setView([latitude, longitude], 15);
-                        latInput.value = latitude.toFixed(8);
-                        lngInput.value = longitude.toFixed(8);
-                    }, () => alert('Tidak dapat mengambil lokasi'));
-                }
+                        console.log('Lokasi terkini:', latitude, longitude);
+                        updateMarker(latitude, longitude);
+                    },
+                    err => {
+                        alert('Tidak dapat mengambil lokasi: ' + err.message);
+                    }, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
             });
 
             // Update marker saat input manual berubah
@@ -229,10 +243,10 @@
                 input.addEventListener('change', () => {
                     const lat = parseFloat(latInput.value) || defaultLat;
                     const lng = parseFloat(lngInput.value) || defaultLng;
-                    marker.setLatLng([lat, lng]);
-                    map.setView([lat, lng]);
+                    updateMarker(lat, lng);
                 });
             });
         });
     </script>
+
 </x-layouts.app>
