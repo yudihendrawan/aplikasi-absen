@@ -45,6 +45,7 @@ class AttendanceController extends Controller
                         'sales' => $salesName,
                         'jadwal' => $jadwal,
                         'real' => $real,
+                        'id_visit' => $visit->id,
                     ],
                     'backgroundColor' => $visit->attendance ? '#22c55e' : '#f59e0b',
                 ];
