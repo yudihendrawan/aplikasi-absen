@@ -51,6 +51,7 @@
                                 {{ \Carbon\Carbon::parse($visit->checkout_time)->format('H:i') ?? '-' }}
                             </div>
                             @if ($visit->attendance)
+                                {{-- ✔️ Sudah absen --}}
                                 <div class="text-green-600 text-xs">
                                     ✔️ Hadir:
                                     {{ \Carbon\Carbon::parse($visit->attendance->check_in_time)->format('H:i') ?? '-' }}
@@ -62,8 +63,29 @@
                                         {{ number_format($visit->attendance->actual_invoice_amount ?? 0, 0, ',', '.') }}</strong>
                                 </div>
                             @else
-                                <div class="text-red-500 text-xs">❌ Belum absen</div>
+                                @php
+                                    $checkin = \Carbon\Carbon::parse($visit->checkin_time);
+                                    $tolerance = $visit->schedule->tolerance ?? 0;
+                                    $absenUntil = \Carbon\Carbon::parse($visit->schedule->visit_date)
+                                        ->setTimeFrom($checkin)
+                                        ->addMinutes($tolerance);
+                                    $canAbsen = now()->lessThanOrEqualTo($absenUntil);
+                                @endphp
+
+                                @if ($canAbsen)
+                                    <form action="{{ route('attendances.store') }}" method="POST" class="mt-2">
+                                        @csrf
+                                        <input type="hidden" name="visit_id" value="{{ $visit->id }}">
+                                        <button
+                                            class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded">
+                                            📍 Absen Sekarang
+                                        </button>
+                                    </form>
+                                @else
+                                    <div class="text-red-600 text-xs mt-2">❌ Tidak absen / mangkir</div>
+                                @endif
                             @endif
+
                         </div>
                     </li>
                 </ul>

@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         locale: "id",
         height: "auto",
         events: window.attendanceEvents,
+
         eventContent: function (arg) {
             const { event } = arg;
             const idVisit = event.extendedProps.id_visit;
@@ -20,21 +21,21 @@ document.addEventListener("DOMContentLoaded", function () {
             const jadwal = event.extendedProps.jadwal || "-";
             const real = event.extendedProps.real || "-";
             const attendance = event.extendedProps.attendance;
-            const visitDate = event.start;
+            const canAbsen = event.extendedProps.can_absen;
+            const isMangkir = event.extendedProps.mangkir;
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            // 🎨 Default bg class
             let bgClass = "bg-gray-100 dark:bg-gray-700";
 
             if (attendance) {
                 bgClass =
                     "bg-green-100 hover:bg-green-200 dark:bg-green-800 dark:hover:bg-green-700";
-            } else if (!attendance && visitDate < today) {
-                bgClass =
-                    "bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-800 dark:hover:bg-yellow-700";
-            } else {
+            } else if (isMangkir) {
                 bgClass =
                     "bg-red-100 hover:bg-red-200 dark:bg-red-800 dark:hover:bg-red-700";
+            } else {
+                bgClass =
+                    "bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-800 dark:hover:bg-yellow-700";
             }
 
             const container = document.createElement("div");
@@ -45,18 +46,27 @@ document.addEventListener("DOMContentLoaded", function () {
             storeWrapper.className = "overflow-hidden relative w-full h-5";
 
             const storeEl = document.createElement("div");
-            storeEl.className = "font-medium inline-block";
+            storeEl.className =
+                "font-medium inline-block text-gray-900 dark:text-white";
             storeEl.textContent = store;
             storeWrapper.appendChild(storeEl);
             container.appendChild(storeWrapper);
 
+            setTimeout(() => {
+                if (storeEl.scrollWidth > storeWrapper.offsetWidth) {
+                    storeEl.classList.add("marquee");
+                }
+            }, 0);
+
             const jadwalEl = document.createElement("div");
-            jadwalEl.className = "text-xs text-gray-500 leading-tight truncate";
+            jadwalEl.className =
+                "text-xs text-gray-600 dark:text-gray-300 leading-tight truncate";
             jadwalEl.innerHTML = `<span class="block">${jadwal}</span>`;
             container.appendChild(jadwalEl);
 
             const realEl = document.createElement("div");
-            realEl.className = "text-xs text-blue-500 leading-tight truncate";
+            realEl.className =
+                "text-xs text-blue-600 dark:text-blue-300 leading-tight truncate";
             realEl.innerHTML = `<span class="block">${real}</span>`;
             container.appendChild(realEl);
 

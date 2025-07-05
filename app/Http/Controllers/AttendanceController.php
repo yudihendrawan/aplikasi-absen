@@ -25,6 +25,7 @@ class AttendanceController extends Controller
             return $schedule->storeVisits->map(function ($visit) use ($schedule) {
                 $storeName = $visit->store->name;
                 $salesName = $schedule->sales->name;
+
                 $jadwal = trim(
                     \Carbon\Carbon::parse($visit->checkin_time)->format('H:i') . ' - ' .
                         \Carbon\Carbon::parse($visit->checkout_time)->format('H:i')
@@ -37,6 +38,15 @@ class AttendanceController extends Controller
                     )
                     : 'Belum hadir';
 
+                // 🧠 Perhitungan batas absen
+                $checkin = \Carbon\Carbon::parse($visit->checkin_time);
+                $tolerance = $schedule->tolerance ?? 0;
+                $absenUntil = \Carbon\Carbon::parse($schedule->visit_date)
+                    ->setTimeFrom($checkin)
+                    ->addMinutes($tolerance);
+                $canAbsen = now()->lessThanOrEqualTo($absenUntil);
+                $isMangkir = !$visit->attendance && now()->greaterThan($absenUntil);
+
                 return [
                     'title' => $storeName,
                     'start' => \Carbon\Carbon::parse($schedule->visit_date)->toDateString(),
@@ -46,11 +56,14 @@ class AttendanceController extends Controller
                         'jadwal' => $jadwal,
                         'real' => $real,
                         'id_visit' => $visit->id,
+                        'attendance' => $visit->attendance,
+                        'can_absen' => $canAbsen,
+                        'mangkir' => $isMangkir,
                     ],
-                    'backgroundColor' => $visit->attendance ? '#22c55e' : '#f59e0b',
                 ];
             });
         })->values();
+
 
 
         return view('pages.attendances.index', compact('schedules', 'attendanceEvents'));
