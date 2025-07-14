@@ -139,7 +139,6 @@
         }
     </style>
 
-    {{-- Script Map Picker with Search & Geolocation --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const latInput = document.getElementById('latitude');

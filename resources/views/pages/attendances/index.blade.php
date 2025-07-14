@@ -4,8 +4,11 @@
     {{-- Kalender Card --}}
     <div class="mb-6 p-4 sm:p-6 bg-white dark:bg-gray-800 border rounded-lg shadow">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Kalender Absensi Sales</h2>
-        <div id="attendance-calendar" class="w-full overflow-x-auto"></div>
+        <div class="w-full overflow-x-auto">
+            <div id="attendance-calendar" class="min-w-[700px] sm:min-w-full"></div>
+        </div>
     </div>
+
 
     {{-- Global Detail Modal --}}
     <div id="global-detail-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
@@ -56,7 +59,7 @@
                                     ✔️ Hadir:
                                     {{ \Carbon\Carbon::parse($visit->attendance->check_in_time)->format('H:i') ?? '-' }}
                                     -
-                                    {{ \Carbon\Carbon::parse($visit->attendance->check_out_time)->format('H:i') ?? '-' }}
+                                    {{ $visit->attendance->check_out_time ? \Carbon\Carbon::parse($visit->attendance->check_out_time)->format('H:i') : 'belum absen pulang' }}
                                 </div>
                                 <div class="text-xs">
                                     Tagihan Realita: <strong>Rp
@@ -64,24 +67,26 @@
                                 </div>
                             @else
                                 @php
-                                    $checkin = \Carbon\Carbon::parse($visit->checkin_time);
-                                    $tolerance = $visit->schedule->tolerance ?? 0;
-                                    $absenUntil = \Carbon\Carbon::parse($visit->schedule->visit_date)
-                                        ->setTimeFrom($checkin)
-                                        ->addMinutes($tolerance);
+                                    $checkin = \Carbon\Carbon::createFromFormat(
+                                        'Y-m-d H:i:s',
+                                        $visit->checkin_time,
+                                        config('app.timezone'),
+                                    );
+                                    $tolerance = $visit->schedule->time_tolerance ?? 0;
+                                    $absenUntil = \Carbon\Carbon::createFromFormat(
+                                        'Y-m-d H:i:s',
+                                        $visit->schedule->visit_date . ' ' . $checkin->format('H:i:s'),
+                                        config('app.timezone'),
+                                    )->addMinutes($tolerance);
                                     $canAbsen = now()->lessThanOrEqualTo($absenUntil);
                                 @endphp
-
                                 @if ($canAbsen)
-                                    <form action="{{ route('attendances.store') }}" method="POST" class="mt-2">
-                                        @csrf
-                                        <input type="hidden" name="visit_id" value="{{ $visit->id }}">
-                                        <button
-                                            class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded">
-                                            📍 Absen Sekarang
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('attendances.createPresence', $visit->id) }}"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded">
+                                        📍 Absen Sekarang
+                                    </a>
                                 @else
+                                    <p>{{ $canAbsen }}</p>
                                     <div class="text-red-600 text-xs mt-2">❌ Tidak absen / mangkir</div>
                                 @endif
                             @endif

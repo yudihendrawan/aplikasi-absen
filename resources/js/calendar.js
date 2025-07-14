@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const canAbsen = event.extendedProps.can_absen;
             const isMangkir = event.extendedProps.mangkir;
 
-            // 🎨 Default bg class
             let bgClass = "bg-gray-100 dark:bg-gray-700";
 
             if (attendance) {

@@ -127,6 +127,49 @@
         @endif
     </script>
     <script>
+        function initPlugins() {
+            // Inisialisasi TomSelect
+            document.querySelectorAll(".tom-select").forEach((select) => {
+                if (!select.classList.contains('ts-initialized')) {
+                    new TomSelect(select);
+                    select.classList.add('ts-initialized');
+                }
+            });
+
+            const endPicker = flatpickr(endInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                altInputClass: 'form-input block w-full rounded-lg border text-sm placeholder-gray-400',
+                onReady: function(_, __, instance) {
+                    instance.altInput.placeholder = "Pilih tanggal selesai";
+                }
+            });
+
+            // Inisialisasi flatpickr untuk start_date
+            const startPicker = flatpickr(startInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                altInputClass: 'form-input block w-full rounded-lg border text-sm placeholder-gray-400',
+                onChange: function(selectedDates) {
+                    if (selectedDates.length > 0) {
+                        endPicker.set('minDate', selectedDates[0]);
+                    }
+                },
+                onReady: function(_, __, instance) {
+                    instance.altInput.placeholder = "Pilih tanggal mulai";
+                }
+            });
+
+            // onChange ke endPicker untuk membatasi start_date maksimal
+            endPicker.config.onChange.push(function(selectedDates) {
+                if (selectedDates.length > 0) {
+                    startPicker.set('maxDate', selectedDates[0]);
+                }
+            });
+
+        }
         document.addEventListener('DOMContentLoaded', function() {
             // date picker
             const startInput = document.getElementById('start_date');
@@ -167,6 +210,27 @@
             });
 
         });
+
+        function fetchAndUpdate(url) {
+            container.classList.add('fade-out');
+
+            setTimeout(() => {
+                fetch(url)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newTable = doc.querySelector('#schedule-table');
+                        if (newTable) {
+                            container.innerHTML = newTable.innerHTML;
+                            history.pushState(null, '', url);
+                        }
+                        container.classList.remove('fade-out');
+
+                        initPlugins();
+                    });
+            }, 300);
+        }
     </script>
 
 </x-layouts.app>

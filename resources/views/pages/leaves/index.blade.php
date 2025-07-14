@@ -77,6 +77,14 @@
                     Filter
                 </button>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 invisible">Export</label>
+                <a href="{{ route('leaves.export', request()->all()) }}"
+                    class="inline-block text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700">
+                    Export Excel
+                </a>
+            </div>
+
             <div class="ml-auto">
                 <button type="button" onclick="window.location.href = '{{ route('leaves.create') }}'"
                     class="text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">

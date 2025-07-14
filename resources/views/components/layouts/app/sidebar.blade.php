@@ -28,6 +28,7 @@
                         wire:navigate
                         >{{ __("Dashboard") }}</flux:navlist.item
                     >
+                    @role('sales')
                     <flux:navlist.item
                         icon="clipboard-document-list"
                         :href="route('attendances.index')"
@@ -36,7 +37,7 @@
                     >
                         {{ __("Absen") }}
                     </flux:navlist.item>
-
+                    @endrole @role('admin')
                     <flux:navlist.item
                         icon="calendar"
                         :href="route('schedules.index')"
@@ -45,6 +46,7 @@
                     >
                         {{ __("Jadwal") }}
                     </flux:navlist.item>
+                    @endrole
                     <flux:navlist.item
                         icon="calendar-days"
                         :href="route('leaves.index')"

@@ -31,19 +31,34 @@ class AttendanceController extends Controller
                         \Carbon\Carbon::parse($visit->checkout_time)->format('H:i')
                 );
 
-                $real = $visit->attendance
-                    ? trim(
-                        \Carbon\Carbon::parse($visit->attendance->check_in_time)->format('H:i') . ' - ' .
-                            \Carbon\Carbon::parse($visit->attendance->check_out_time)->format('H:i')
-                    )
-                    : 'Belum hadir';
+                $real = 'Belum hadir';
+                if ($visit->attendance) {
+                    $in = $visit->attendance->check_in_time
+                        ? Carbon::parse($visit->attendance->check_in_time)->format('H:i')
+                        : null;
+                    $out = $visit->attendance->check_out_time
+                        ? Carbon::parse($visit->attendance->check_out_time)->format('H:i')
+                        : null;
 
-                // 🧠 Perhitungan batas absen
-                $checkin = \Carbon\Carbon::parse($visit->checkin_time);
-                $tolerance = $schedule->tolerance ?? 0;
-                $absenUntil = \Carbon\Carbon::parse($schedule->visit_date)
-                    ->setTimeFrom($checkin)
-                    ->addMinutes($tolerance);
+                    if ($in && $out) {
+                        $real = "$in - $out";
+                    } elseif ($in) {
+                        $real = $in;
+                    }
+                }
+
+                $tolerance = $schedule->time_tolerance ?? 0;
+                $checkin = Carbon::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $visit->checkin_time,
+                    config('app.timezone')
+                );
+                $absenUntil = Carbon::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $schedule->visit_date . ' ' . $checkin->format('H:i:s'),
+                    config('app.timezone')
+                )->addMinutes($tolerance);
+
                 $canAbsen = now()->lessThanOrEqualTo($absenUntil);
                 $isMangkir = !$visit->attendance && now()->greaterThan($absenUntil);
 
@@ -61,117 +76,140 @@ class AttendanceController extends Controller
                         'mangkir' => $isMangkir,
                     ],
                 ];
+                // return [
+                //     'checkin' => \Carbon\Carbon::parse($visit->checkin_time),
+                //     'tolerance' => $tolerance,
+                //     'schedule' => $schedule,
+                //     'absen_until' => $absenUntil,
+                //     'can_absen' => $canAbsen,
+                //     'now' => now(),
+                // ];
             });
         })->values();
 
-
-
+        // dd($attendanceEvents[6]);
         return view('pages.attendances.index', compact('schedules', 'attendanceEvents'));
     }
 
 
 
-    public function create()
+    public function createPresence($visit)
     {
         $userId = auth()->id();
 
         $storeVisit = ScheduleStoreVisit::whereHas('schedule', function ($q) use ($userId) {
-            $q->where('user_id', $userId)
-                ->whereDate('visit_date', '>=', now()->toDateString());
-        })->with(['store', 'schedule'])->first();
+            $q->where('user_id', $userId);
+        })->with(['store', 'schedule'])->where('id', $visit)->first();
 
-        // dd($storeVisit);
         if (!$storeVisit) {
             return back()->with('error', 'Tidak ada jadwal kunjungan untuk hari ini.');
         }
 
         // Waktu saat ini
         $now = now();
-        $scheduleStartTime = Carbon::parse($storeVisit->checkin_time); // field checkin_time dari schedule_store_visits
+        $scheduleStartTime = Carbon::parse($storeVisit->checkin_time);
 
         $canAbsen = $now->greaterThanOrEqualTo($scheduleStartTime);
-
         return view('pages.attendances.create', compact('storeVisit', 'canAbsen', 'scheduleStartTime'));
     }
 
     public function store(Request $request)
     {
-        // Validasi input
-        // $validated = $request->validate([
-        //     'note' => 'nullable|string|max:500',
-        //     'bukti' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        //     'latitude' => 'required|numeric',
-        //     'longitude' => 'required|numeric',
-        //     'location_hash' => 'required|string',
-        //     'accuracy' => 'required|numeric|max:100'
-        // ]);
 
-        // Validasi hash lokasi
-        $salt = config('app.key');
-        $timestamp = floor(time() / (60)); // Timestamp per menit
-        $expectedHash = base64_encode(
-            $request->latitude . ':' .
-                $request->longitude . ':' .
-                $salt . ':' .
-                $timestamp
-        );
-
-        dd($request->all());
-        dd(hash_equals($request->location_hash_masuk, $expectedHash));
-
-        if (!hash_equals($request->location_hash, $expectedHash)) {
-            Log::warning('Invalid location hash detected', [
-                'ip' => $request->ip(),
-                'user' => $request->user()->id,
-                'expected' => $expectedHash,
-                'received' => $request->location_hash
+        try {
+            //code...
+            $request->validate([
+                'note' => 'nullable|string|max:500',
+                'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'latitude' => 'required|numeric|between:-90,90',
+                'longitude' => 'required|numeric|between:-180,180',
+                'location_hash' => 'required|string',
+                'accuracy' => 'required|numeric',
+                'type' => 'required|in:checkIn,checkOut',
+                'nominal_invoice' => 'nullable|numeric|min:0',
+                'storeVisitId' => 'required|exists:schedule_store_visits,id',
             ]);
-            return back()->withErrors(['latitude' => 'Data lokasi tidak valid.'])->withInput();
+
+
+
+            // Validasi hash lokasi
+            $salt = config('app.key');
+            $timestamp = floor(time() / (60)); // Timestamp per menit
+            $expectedHash = base64_encode(
+                $request->latitude . ':' .
+                    $request->longitude . ':' .
+                    $salt . ':' .
+                    $timestamp
+            );
+
+
+
+            if (!hash_equals($request->location_hash, $expectedHash)) {
+                Log::warning('Invalid location hash detected', [
+                    'ip' => $request->ip(),
+                    'user' => $request->user()->id,
+                    'expected' => $expectedHash,
+                    'received' => $request->location_hash
+                ]);
+                return back()->withErrors(['latitude' => 'Data lokasi tidak valid.']);
+            }
+
+            // Validasi akurasi
+            if ($request->accuracy > 200) {
+                return back()->withErrors(['latitude' => 'Akurasi GPS terlalu rendah (±' . round($request->accuracy) . 'm).']);
+            }
+
+            // Validasi waktu absen
+            if (!$this->canAbsen($request->user())) {
+                return back()->withErrors(['time' => 'Belum waktunya absen.']);
+            }
+
+            // Validasi lokasi toko
+            $storeVisit = ScheduleStoreVisit::find($request->storeVisitId);
+            $distance = $this->calculateDistance(
+                $storeVisit->store->latitude,
+                $storeVisit->store->longitude,
+                $request->latitude,
+                $request->longitude
+            );
+
+            if ($distance > 100) {
+                return back()->withErrors(['latitude' => 'Anda berada di luar radius toko (' . round($distance) . 'm).']);
+            }
+
+            // Catat absensi
+            $attendance = Attendance::create([
+                'schedule_store_visit_id' => $storeVisit->id,
+                'attended_at' => now(),
+                'note' => $request->note,
+                'actual_invoice_amount' => $request->type === 'checkIn' ? null : $request->nominal_invoice,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'accuracy' => $request->accuracy,
+                'device_info' => $request->userAgent(),
+                'check_' . ($request->type === 'checkIn' ? 'in' : 'out') . '_ip' => $request->ip(),
+                'check_' . ($request->type === 'checkIn' ? 'in' : 'out') . '_time' => now()->format('H:i:s'),
+            ]);
+
+            if ($request->hasFile('image')) {
+                $collection = $request->type === 'checkIn' ? 'checkins' : 'checkouts';
+
+                $attendance
+                    ->addMediaFromRequest('image')
+                    ->withCustomProperties([
+                        'type' => $request->type,
+                        'accuracy' => $request->accuracy,
+                    ])
+                    ->toMediaCollection($collection);
+            }
+
+
+
+            return redirect()->route('attendances.index')
+                ->with('success', 'Absensi berhasil dicatat.');
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
         }
-
-        // Validasi akurasi
-        if ($request->accuracy > 50) {
-            return back()->withErrors(['latitude' => 'Akurasi GPS terlalu rendah (±' . round($request->accuracy) . 'm).'])->withInput();
-        }
-
-        // Validasi waktu absen
-        if (!$this->canAbsen($request->user())) {
-            return back()->withErrors(['time' => 'Belum waktunya absen.'])->withInput();
-        }
-
-        // Validasi lokasi toko
-        $storeVisit = $request->user()->storeVisits()->latest()->firstOrFail();
-        $distance = $this->calculateDistance(
-            $storeVisit->store->latitude,
-            $storeVisit->store->longitude,
-            $request->latitude,
-            $request->longitude
-        );
-
-        if ($distance > 100) {
-            return back()->withErrors(['latitude' => 'Anda berada di luar radius toko (' . round($distance) . 'm).'])->withInput();
-        }
-
-        // Simpan bukti foto
-        $buktiPath = $request->file('bukti')->store('absensi', 'public');
-
-        // Catat absensi
-        Attendance::create([
-            'schedule_store_visit_id' => $storeVisit->id,
-            'attended_at' => now(),
-            'note' => $request->note,
-            'actual_invoice_amount' => null,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'accuracy' => $request->accuracy,
-            'device_info' => $request->userAgent(),
-            'check_in_ip' => $request->ip(),
-            'check_in_time' => now()->format('H:i:s'),
-            'bukti_path' => $buktiPath,
-        ]);
-
-        return redirect()->route('attendances.index')
-            ->with('success', 'Absensi berhasil dicatat.');
     }
 
     private function canAbsen($user)

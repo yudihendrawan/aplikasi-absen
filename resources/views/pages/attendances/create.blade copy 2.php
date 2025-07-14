@@ -109,8 +109,9 @@
                         <div class="camera-button-inner"></div>
                     </div>
                 </div>
-                <input type="file" name="image" id="fotoMasukInput" accept="image/*" capture="user" class="hidden">
-                <input type="hidden" name="image" id="fotoMasukData">
+                <input type="file" name="foto_masuk" id="fotoMasukInput" accept="image/*" capture="user"
+                    class="hidden">
+                <input type="hidden" name="foto_masuk_data" id="fotoMasukData">
                 <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Foto wajah Anda saat absen masuk</p>
             </div>
 
@@ -122,12 +123,10 @@
             </div>
 
             {{-- Hidden Input --}}
-            <input type="hidden" name="storeVisitId" id="storeVisitIdMasuk" value="{{ $storeVisit->id }}">
-            <input type="hidden" name="type" id="typeMasuk" value="checkIn">
-            <input type="hidden" name="latitude" id="latitudeMasuk">
-            <input type="hidden" name="longitude" id="longitudeMasuk">
-            <input type="hidden" name="location_hash" id="locationHashMasuk">
-            <input type="hidden" name="accuracy" id="accuracyMasuk">
+            <input type="hidden" name="latitude_masuk" id="latitudeMasuk">
+            <input type="hidden" name="longitude_masuk" id="longitudeMasuk">
+            <input type="hidden" name="location_hash_masuk" id="locationHashMasuk">
+            <input type="hidden" name="accuracy_masuk" id="accuracyMasuk">
 
             <button type="submit" id="submitMasukBtn"
                 class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
@@ -188,10 +187,10 @@
             </div>
 
             {{-- Hidden Input --}}
-            <input type="hidden" name="latitude" id="latitudePulang">
-            <input type="hidden" name="longitude" id="longitudePulang">
-            <input type="hidden" name="location_hash" id="locationHashPulang">
-            <input type="hidden" name="accuracy" id="accuracyPulang">
+            <input type="hidden" name="latitude_pulang" id="latitudePulang">
+            <input type="hidden" name="longitude_pulang" id="longitudePulang">
+            <input type="hidden" name="location_hash_pulang" id="locationHashPulang">
+            <input type="hidden" name="accuracy_pulang" id="accuracyPulang">
 
             <button type="submit" id="submitPulangBtn"
                 class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
@@ -218,7 +217,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Di bagian atas script, tambahkan flag development
-        const isDevelopment = {{ app()->environment('local') ? 'true' : 'false' }};
+        const isDevelopment = {
+            {
+                app() - > environment('local') ? 'true' : 'false'
+            }
+        };
 
         // Fungsi getPositionSafe yang dimodifikasi
         function getPositionSafe(type = 'Masuk') {
@@ -314,17 +317,25 @@
 
 
     @php
-        $env = app()->environment();
+    $env = app()->environment();
 
     @endphp
 
-    {{-- @if ($env === 'local')
-        @dd('local');
-    @endif --}}
+    @if ($env === 'local')
+    @dd('local');
+    @endif
     <script>
         // Konfigurasi
-        const tokoLat = {{ $storeVisit->store->latitude }};
-        const tokoLng = {{ $storeVisit->store->longitude }};
+        const tokoLat = {
+            {
+                $storeVisit - > store - > latitude
+            }
+        };
+        const tokoLng = {
+            {
+                $storeVisit - > store - > longitude
+            }
+        };
         const maxRadiusMeter = 100;
 
         // Variabel global
@@ -387,7 +398,6 @@
             document.getElementById(`accuracy${type}`).value = accuracy;
 
             // Update marker
-            console.log(`[${type}] Lokasi: ${lat}, ${lng} (Akurasi: ${accuracy}m)`);
             if (type === 'Masuk') {
                 if (!userMarkerMasuk) {
                     userMarkerMasuk = L.marker([lat, lng]).addTo(mapMasuk)
@@ -411,7 +421,7 @@
             const locationStatus = document.getElementById(`locationStatus${type}`);
             const submitBtn = document.getElementById(`submit${type}Btn`);
             // Update status
-            if (accuracy > 5000) {
+            if (accuracy > 50) {
                 locationStatus.textContent =
                     `Akurasi GPS rendah (±${Math.round(accuracy)}m). Mohon tunggu atau cari lokasi dengan sinyal lebih baik.`;
                 locationStatus.className = 'mt-2 text-sm text-red-600 dark:text-red-300';
