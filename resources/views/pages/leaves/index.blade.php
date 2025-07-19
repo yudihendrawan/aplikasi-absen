@@ -29,12 +29,15 @@
     <div class="overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800 p-4">
         <h1 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Izin Karyawan</h1>
         <form method="GET" action="{{ route('leaves.index') }}" class="mb-4 flex flex-wrap w-full gap-4 items-end">
-            <div>
-                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cari Nama
-                    Karyawan</label>
-                <input type="text" name="search" id="search" value="{{ request('search') }}"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
+
+            @role('admin')
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cari Nama
+                        Karyawan</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+            @endrole
 
             <div>
                 <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dari
@@ -78,10 +81,13 @@
                 </button>
             </div>
             <div class="flex flex-wrap gap-2 ml-auto items-end">
-                <a href="{{ route('leaves.export', request()->all()) }}"
-                    class="text-white transition-all active:scale-95 duration-200 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700">
-                    Export Excel
-                </a>
+
+                @role('admin')
+                    <a href="{{ route('leaves.export', request()->all()) }}"
+                        class="text-white transition-all active:scale-95 duration-200 bg-indigo-700 hover:bg-indigo-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700">
+                        Export Excel
+                    </a>
+                @endrole
 
                 <a href="{{ route('leaves.create') }}"
                     class="text-white transition-all active:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">

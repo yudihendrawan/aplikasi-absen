@@ -14,7 +14,17 @@ class ScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */ public function index(Request $request)
+     */
+
+    public function __construct()
+    {
+        // $this->middleware('role:admin')->only(['index', 'show']);
+        $this->middleware('role:admin');
+        // $this->middleware('role:manager')->only(['create', 'store', 'edit', 'update']);
+
+        // $this->middleware('role:admin')->only(['destroy']);
+    }
+    public function index(Request $request)
     {
         $query = Schedule::with(['sales',  'storeVisits', 'creator']);
 
