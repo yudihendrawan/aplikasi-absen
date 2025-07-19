@@ -63,18 +63,35 @@ class User extends Authenticatable
 
     public function schedules(): HasMany
     {
+
         return $this->hasMany(Schedule::class);
     }
 
     public function createdSchedules(): HasMany
     {
+        // untuk user yang punya role admin (role permission menggunakan spatie/laravel-permission)
         return $this->hasMany(Schedule::class, 'created_by');
     }
 
-    public function presents(): HasMany
+    // public function attendances(): HasMany
+    // {
+    //     // untuk user yang punya role sales (role permission menggunakan spatie/laravel-permission)
+    //     return $this->hasMany(Attendance::class);
+    // }
+
+    // Di User.php
+    public function attendances()
     {
-        return $this->hasMany(Present::class);
+        return $this->hasManyThrough(
+            Attendance::class,
+            ScheduleStoreVisit::class,
+            'user_id', // foreign key di schedule_store_visits
+            'schedule_store_visit_id', // foreign key di attendances
+            'id', // local key di users
+            'id'  // local key di schedule_store_visits
+        );
     }
+
 
     public function leaves(): HasMany
     {

@@ -21,6 +21,22 @@ document.addEventListener("DOMContentLoaded", function () {
         new TomSelect(select);
     });
 });
+function initControls(root = document) {
+    // Init Flatpickr
+    root.querySelectorAll("[data-date]:not([data-date-init])").forEach((el) => {
+        flatpickr(el, { dateFormat: "Y-m-d" });
+        el.setAttribute("data-date-init", "1");
+    });
+
+    // Init TomSelect
+    root.querySelectorAll("[data-tom]:not([data-tom-init])").forEach((el) => {
+        new TomSelect(el, {
+            create: false,
+            persist: false,
+        });
+        el.setAttribute("data-tom-init", "1");
+    });
+}
 
 // document.addEventListener("DOMContentLoaded", () => {
 //     window.initPlugins();

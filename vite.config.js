@@ -15,6 +15,8 @@ export default defineConfig({
     },
 });
 
+// ketika mode production jalankan npm run build dan buka script dibawah ini
+// origin diganti sesuai dengan url domain
 // import { defineConfig } from "vite";
 // import laravel from "laravel-vite-plugin";
 
@@ -27,7 +29,7 @@ export default defineConfig({
 //             origin: "*",
 //             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 //         },
-//         origin: "https://ebe99e9007d7.ngrok-free.app/",
+//         origin: "https://731da72e90cd.ngrok-free.app/",
 //         strictPort: true,
 //     },
 //     plugins: [
@@ -42,3 +44,4 @@ export default defineConfig({
 //         }),
 //     ],
 // });
+// ketika mode production jalankan npm run build dan buka script diatas ini

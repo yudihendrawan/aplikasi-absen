@@ -6,7 +6,7 @@
         <div class="flex items-center gap-4">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="lucide lucide-store-icon lucide-store">
+                class="lucide sm:flex hidden lucide-store-icon lucide-store">
                 <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
                 <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                 <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
@@ -41,8 +41,12 @@
                 </button>
             </div>
             <div class="ml-auto">
+                <button type="button" onclick="window.location.href = '{{ route('stores.export', request()->all()) }}'"
+                    class="text-white bg-indigo-700 active:scale-95 transition-all duration-200 hover:bg-indigo-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700">
+                    {{ __('Export') }}
+                </button>
                 <button type="button" onclick="window.location.href = '{{ route('stores.create') }}'"
-                    class="text-white transition-all focus:scale-95 active:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    class="text-white transition-all  active:scale-95 duration-200 bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
                     Tambah
                 </button>
             </div>

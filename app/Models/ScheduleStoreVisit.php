@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ScheduleStoreVisit extends Model
@@ -31,5 +32,9 @@ class ScheduleStoreVisit extends Model
     public function attendance(): HasOne
     {
         return $this->hasOne(Attendance::class);
+    }
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
     }
 }

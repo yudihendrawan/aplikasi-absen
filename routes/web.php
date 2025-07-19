@@ -1,6 +1,10 @@
 <?php
 
+use App\Exports\AttendancesExport;
 use App\Exports\LeavesExport;
+use App\Exports\SchedulesExport;
+use App\Exports\StoresExport;
+use App\Exports\UsersExport;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaveController;
@@ -10,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -74,9 +79,26 @@ Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/leaves/export', function (Illuminate\Http\Request $request) {
+    Route::get('/leaves/export', function (Request $request) {
         return Excel::download(new LeavesExport($request), 'izin_sales.xlsx');
     })->name('leaves.export');
+
+    Route::get('/users/export', function (Request $request) {
+        return Excel::download(new UsersExport($request), 'data_users.xlsx');
+    })->name('users.export');
+
+    Route::get('/attendances/export', function (Request $request) {
+        return Excel::download(new AttendancesExport($request), 'data_attendances.xlsx');
+    })->name('attendances.export');
+
+    Route::get('/stores/export', function (Request $request) {
+        return Excel::download(new StoresExport($request), 'data_stores.xlsx');
+    })->name('stores.export');
+
+    Route::get('/schedules/export', function (Request $request) {
+        return Excel::download(new SchedulesExport($request), 'data_schedules.xlsx');
+    })->name('schedules.export');
+
     Route::resource('schedules', ScheduleController::class);
     Route::resource('users', UserController::class);
     Route::resource('leaves', LeaveController::class);
