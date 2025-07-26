@@ -9,9 +9,10 @@
 @source "../../node_modules/flowbite-datepicker";
 
 @source "../views";
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
-@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+@source "../views/vendor/laravel/pagination/*.blade.php";
+@source "../views/vendor/livewire/flux-pro/stubs/**/*.blade.php";
+@source "../views/vendor/livewire/flux/stubs/**/*.blade.php";
+
 @import "./flux.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
