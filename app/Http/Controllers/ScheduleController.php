@@ -96,6 +96,7 @@ class ScheduleController extends Controller
         ]);
 
         $duplicateSchedule = Schedule::where('user_id', $request->user_id)
+            ->whereNotNull('approved_at')
             ->whereDate('visit_date', $request->visit_date)
             ->exists();
 
