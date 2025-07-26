@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../../vendor/livewire/flux/dist/flux.css";
+/* @import "../../vendor/livewire/flux/dist/flux.css"; */
 @import "flatpickr/dist/flatpickr.min.css";
 @import "tom-select/dist/css/tom-select.css";
 
