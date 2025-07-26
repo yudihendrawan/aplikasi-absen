@@ -25,21 +25,29 @@
             <div class="mb-4">
                 <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sales <span
                         class="text-red-500">*</span></label>
-                <select id="user_id" name="user_id" required
-                    class="tom-select w-full @error('user_id') border-red-500 @enderror">
-                    <option value="">Pilih Sales</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }} ({{ $user->email }})
-                        </option>
-                    @endforeach
-                </select>
 
+                @if (auth()->user()->hasRole('sales'))
+                    <input type="text" readonly
+                        class="w-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-white"
+                        value="{{ auth()->user()->name }} ({{ auth()->user()->email }})">
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                @else
+                    <select id="user_id" name="user_id" required
+                        class="tom-select w-full @error('user_id') border-red-500 @enderror">
+                        <option value="">Pilih Sales</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                @endif
 
                 @error('user_id')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                 @enderror
             </div>
+
 
 
             <div class="mb-4 ">
@@ -89,7 +97,7 @@
             <div class="mb-4">
                 <label for="description"
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Description') }}</label>
-                <textarea id="description" name="description" rows="3" required
+                <textarea id="description" name="description" rows="3"
                     class="form-textarea block w-full rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('description') border-red-500 @enderror"
                     placeholder="{{ __('Masukkan deskripsi') }}">{{ old('description') }}</textarea>
                 @error('description')
@@ -98,10 +106,17 @@
             </div>
             <div></div>
             <div class="flex items-center justify-end">
+                @php
+                    $label = auth()->user()->hasRole('sales') ? 'Ajukan' : 'Simpan dan Approve';
+                @endphp
+
                 <button type="submit"
-                    class="text-white transition-all focus:scale-95 hover:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Simpan</button>
+                    class="text-white transition-all active:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    {{ $label }}
+                </button>
+
                 <button type="button" onclick="window.location='{{ route('leaves.index') }}'"
-                    class="ml-2 transition-all focus:scale-95 hover:scale-95 duration-200 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Batal</button>
+                    class="ml-2 transition-all active:scale-95 duration-200 text-gray-700 bg-gray-200 hover:bg-gray-300  focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Batal</button>
             </div>
         </form>
     </section>
@@ -127,6 +142,49 @@
         @endif
     </script>
     <script>
+        function initPlugins() {
+            // Inisialisasi TomSelect
+            document.querySelectorAll(".tom-select").forEach((select) => {
+                if (!select.classList.contains('ts-initialized')) {
+                    new TomSelect(select);
+                    select.classList.add('ts-initialized');
+                }
+            });
+
+            const endPicker = flatpickr(endInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                altInputClass: 'form-input block w-full rounded-lg border text-sm placeholder-gray-400',
+                onReady: function(_, __, instance) {
+                    instance.altInput.placeholder = "Pilih tanggal selesai";
+                }
+            });
+
+            // Inisialisasi flatpickr untuk start_date
+            const startPicker = flatpickr(startInput, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                altInputClass: 'form-input block w-full rounded-lg border text-sm placeholder-gray-400',
+                onChange: function(selectedDates) {
+                    if (selectedDates.length > 0) {
+                        endPicker.set('minDate', selectedDates[0]);
+                    }
+                },
+                onReady: function(_, __, instance) {
+                    instance.altInput.placeholder = "Pilih tanggal mulai";
+                }
+            });
+
+            // onChange ke endPicker untuk membatasi start_date maksimal
+            endPicker.config.onChange.push(function(selectedDates) {
+                if (selectedDates.length > 0) {
+                    startPicker.set('maxDate', selectedDates[0]);
+                }
+            });
+
+        }
         document.addEventListener('DOMContentLoaded', function() {
             // date picker
             const startInput = document.getElementById('start_date');
@@ -167,6 +225,27 @@
             });
 
         });
+
+        function fetchAndUpdate(url) {
+            container.classList.add('fade-out');
+
+            setTimeout(() => {
+                fetch(url)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newTable = doc.querySelector('#schedule-table');
+                        if (newTable) {
+                            container.innerHTML = newTable.innerHTML;
+                            history.pushState(null, '', url);
+                        }
+                        container.classList.remove('fade-out');
+
+                        initPlugins();
+                    });
+            }, 300);
+        }
     </script>
 
 </x-layouts.app>

@@ -28,6 +28,16 @@
                         wire:navigate
                         >{{ __("Dashboard") }}</flux:navlist.item
                     >
+                    @role('sales')
+                    <flux:navlist.item
+                        icon="clipboard-document-list"
+                        :href="route('attendances.index')"
+                        :current="request()->routeIs('attendances.*')"
+                        wire:navigate
+                    >
+                        {{ __("Absen") }}
+                    </flux:navlist.item>
+                    @endrole @role('admin')
                     <flux:navlist.item
                         icon="calendar"
                         :href="route('schedules.index')"
@@ -36,6 +46,7 @@
                     >
                         {{ __("Jadwal") }}
                     </flux:navlist.item>
+                    @endrole
                     <flux:navlist.item
                         icon="calendar-days"
                         :href="route('leaves.index')"
@@ -46,6 +57,14 @@
                     </flux:navlist.item>
                     @role('admin')
                     <flux:navlist.item
+                        icon="shopping-bag"
+                        :href="route('stores.index')"
+                        :current="request()->routeIs('stores.*')"
+                        wire:navigate
+                    >
+                        {{ __("Toko") }}
+                    </flux:navlist.item>
+                    <flux:navlist.item
                         icon="users"
                         :href="route('users.index')"
                         :current="request()->routeIs('users.*')"
@@ -53,6 +72,7 @@
                     >
                         {{ __("Karyawan") }}
                     </flux:navlist.item>
+
                     @endrole @hasanyrole('admin|manager') @endhasanyrole
                 </flux:navlist.group>
             </flux:navlist>

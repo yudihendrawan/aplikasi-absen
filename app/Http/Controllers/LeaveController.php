@@ -11,6 +11,12 @@ class LeaveController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        $this->middleware('role:admin')->only(['destroy', 'update',  'edit', 'show']);
+    }
+
     public function index(Request $request)
     {
         $query = Leave::with(['user']);
@@ -29,6 +35,10 @@ class LeaveController extends Controller
         $sortableColumns = ['start_date'];
         $sortBy = $request->input('sort_by');
         $sortDir = $request->input('sort_dir') === 'desc' ? 'desc' : 'asc';
+
+        if (auth()->user()->hasRole('sales')) {
+            $query->where('user_id', auth()->id());
+        }
 
         if ($sortBy && in_array($sortBy, $sortableColumns)) {
             $query->orderBy($sortBy, $sortDir);
@@ -49,9 +59,15 @@ class LeaveController extends Controller
      */
     public function create()
     {
-        $users = User::role(['sales'])->get();
+        if (auth()->user()->hasRole('sales')) {
+            $users = collect([auth()->user()]);
+        } else {
+            $users = User::role('sales')->get();
+        }
+
         return view('pages.leaves.create', compact('users'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -138,5 +154,27 @@ class LeaveController extends Controller
         $leave = Leave::find($leave)->delete();
 
         return redirect()->route('leaves.index')->with('success', 'Izin berhasil di hapus.');
+    }
+
+
+    public function approve(Leave $leave)
+    {
+        $leave->update(['approved_at' => now(), 'rejected_at' => null, 'rejection_reason' => null]);
+        return back()->with('success', 'Cuti disetujui.');
+    }
+
+    public function reject(Request $request, Leave $leave)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $leave->update([
+            'rejected_at' => now(),
+            'approved_at' => null,
+            'rejection_reason' => $request->reason,
+        ]);
+
+        return back()->with('success', 'Cuti ditolak dengan alasan.');
     }
 }

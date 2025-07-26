@@ -59,8 +59,12 @@
                 </a> --}}
             </div>
             <div class="ml-auto">
+                <button type="button" onclick="window.location.href = '{{ route('users.export', request()->all()) }}'"
+                    class="text-white bg-indigo-700 active:scale-95 transition-all duration-200 hover:bg-indigo-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-700">
+                    {{ __('Export') }}
+                </button>
                 <button type="button" onclick="window.location.href = '{{ route('users.create') }}'"
-                    class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    class="text-white bg-emerald-700 active:scale-95 transition-all duration-200 hover:bg-emerald-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-emerald-600 dark:hover:bg-emerald-700">
                     {{ __('Create') }}
                 </button>
             </div>

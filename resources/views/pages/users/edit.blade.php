@@ -97,11 +97,11 @@
                 <div></div>
                 <div class="flex items-center justify-end">
                     <button type="submit"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5">
+                        class="text-white bg-blue-700 hover:bg-blue-800 active:scale-95 duration-200 transition-all font-medium rounded-lg text-sm px-5 py-2.5">
                         {{ __('Update') }}
                     </button>
                     <a href="{{ route('users.index') }}"
-                        class="ml-2 text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 rounded-lg text-sm px-5 py-2.5 dark:bg-gray-700 dark:text-white">
+                        class="ml-2 text-gray-700 bg-gray-200 hover:bg-gray-300 active:scale-95 duration-200 transition-all rounded-lg text-sm px-5 py-2.5 dark:bg-gray-700 dark:text-white">
                         {{ __('Cancel') }}
                     </a>
                 </div>

@@ -1,24 +1,141 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+    @role('admin')
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            @endrole
+            @role('admin')
+                <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Jumlah Toko</h3>
+                    <p class="text-3xl font-bold">{{ $totalStores ?? '-' }}</p>
+                </div>
+            @endrole
+            <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Jadwal Hari Ini</h3>
+                <p class="text-3xl font-bold">{{ $todaySchedulesCount ?? '-' }}</p>
             </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+            <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Izin Hari Ini</h3>
+                <p class="text-3xl font-bold">{{ $activeLeavesToday ?? '-' }}</p>
             </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+            <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Kunjungan Hari Ini</h3>
+                <p class="text-3xl font-bold">{{ $attendancesToday ?? '-' }}</p>
             </div>
         </div>
-        <div class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-            <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Perbandingan Invoice Hari Ini</h3>
+                @if (($invoicesToday->expected ?? 0) == 0 && ($invoicesToday->actual ?? 0) == 0)
+                    <p class="text-gray-500 mt-2">Tidak ada data invoice hari ini.</p>
+                @else
+                    <canvas id="invoiceChart" class="mt-4"></canvas>
+                @endif
+
+            </div>
+
+            <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Izin Hari Ini</h3>
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700 mt-2">
+                    @forelse ($leavesToday as $leave)
+                        <li class="py-2">
+                            <strong>{{ $leave->user->name ?? '-' }}</strong>: {{ $leave->name ?? '-' }}<br>
+                            <small class="text-gray-500">{{ $leave->start_date->format('d M') }} -
+                                {{ $leave->end_date->format('d M') }}</small>
+                        </li>
+                    @empty
+                        <li class="py-2 text-gray-500">Tidak ada data izin hari ini</li>
+                    @endforelse
+                </ul>
+            </div>
         </div>
-    </div>
+
+        <div class="rounded-xl border bg-white p-4 shadow dark:border-neutral-700 dark:bg-neutral-800">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Kunjungan Sales Hari Ini</h3>
+            <div class="overflow-auto">
+                <table class="w-full text-sm text-left">
+                    <thead>
+                        <tr>
+                            <th>Sales</th>
+                            <th>Toko</th>
+                            <th>Jadwal</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Est. Invoice</th>
+                            <th>Real. Invoice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($visitsToday as $schedule)
+                            @if ($schedule->storeVisits->isEmpty())
+                                <tr>
+                                    <td colspan="7" class="text-center text-gray-500 py-2">Tidak ada kunjungan toko
+                                        untuk
+                                        {{ $schedule->user->name ?? '-' }}</td>
+                                </tr>
+                            @else
+                                @foreach ($schedule->storeVisits as $visit)
+                                    <tr>
+                                        <td>{{ $schedule->sales->name ?? '-' }}</td>
+                                        <td>{{ $visit->store->name ?? '-' }}</td>
+                                        <td>{{ optional($visit->checkin_time)->format('H:i') }} -
+                                            {{ optional($visit->checkout_time)->format('H:i') }}</td>
+                                        <td>{{ optional($visit->attendance?->check_in_time)->format('H:i') ?? '-' }}
+                                        </td>
+                                        <td>{{ optional($visit->attendance?->check_out_time)->format('H:i') ?? '-' }}
+                                        </td>
+                                        <td>Rp{{ number_format($visit->expected_invoice_amount, 0, ',', '.') }}</td>
+                                        <td>Rp{{ number_format($visit->attendance?->actual_invoice_amount ?? 0, 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center text-gray-500 py-2">Tidak ada kunjungan hari ini
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+        {{-- ChartJS --}}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('invoiceChart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Invoice'],
+                        datasets: [{
+                                label: 'Estimasi',
+                                data: [{{ $invoicesToday->expected ?? 0 }}],
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            },
+                            {
+                                label: 'Realisasi',
+                                data: [{{ $invoicesToday->actual ?? 0 }}],
+                                backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: false,
+                            },
+                        },
+                    },
+                });
+            });
+        </script>
 </x-layouts.app>

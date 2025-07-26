@@ -86,8 +86,8 @@
                                 </select>
                                 <div class="relative w-32">
                                     <input type="time" name="stores[{{ $index }}][checkin_time]"
-                                        class="form-input rounded-lg w-32 pl-10" value="{{ $store['checkin_time'] }}"
-                                        required>
+                                        class="form-input text-sm border rounded-lg w-32 pl-10"
+                                        value="{{ $store['checkin_time'] }}" required>
                                     <div
                                         class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -250,60 +250,62 @@
         function addStoreRow() {
             const container = document.getElementById('store-list');
             const row = document.createElement('div');
-            setupCurrencyFormat(row.querySelector('.currency-format'));
 
             row.className = 'store-row flex gap-2 mb-2';
             row.innerHTML = `
-                <select name="stores[${storeIndex}][store_id]" class="tom-select w-full" required>
-                    <option value="">Pilih Toko</option>
-                    @foreach ($stores as $store)
-                        <option value="{{ $store->id }}">{{ $store->name }}</option>
-                    @endforeach
-                </select>
-                   <div class="relative w-32">
-                        <input type="time" name="stores[${storeIndex}][checkin_time]" class="form-input rounded-lg  w-32 pl-10"
-                            placeholder="Check-in" required>
-                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
-                            <!-- Heroicon clock -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="relative w-32">
-                        <input type="time" name="stores[${storeIndex}][checkout_time]" class="form-input rounded-lg w-32 pl-10"
-                            placeholder="Check-out" required>
-                            
-                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
-                            <!-- Heroicon clock -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                 
-                <input type="text" name="stores[${storeIndex}][expected_invoice_amount]" placeholder="Estimasi tagihan (Opsional)" 
-                        class="form-input currency-format  block w-1/3 rounded-lg border text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('expected_invoice_amount') border-red-500 @enderror"   data-hidden-input="amount-${storeIndex}">
-                        <input type="hidden"
-         name="stores[${storeIndex}][expected_invoice_amount]"
-       id="amount-${storeIndex}">
-               <button type="button" onclick="removeStoreRow(this)" class="text-red-500 cursor-pointer" title="Hapus">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
+        <select name="stores[${storeIndex}][store_id]" class="tom-select w-full" required>
+            <option value="">Pilih Toko</option>
+            @foreach ($stores as $store)
+                <option value="{{ $store->id }}">{{ $store->name }}</option>
+            @endforeach
+        </select>
+        <div class="relative w-32">
+            <input type="time" name="stores[${storeIndex}][checkin_time]" class="form-input rounded-lg w-32 pl-10" required>
+            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+        <div class="relative w-32">
+            <input type="time" name="stores[${storeIndex}][checkout_time]" class="form-input rounded-lg w-32 pl-10" required>
+            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+        <input type="text" name="stores[${storeIndex}][expected_invoice_amount]"
+            class="form-input currency-format block w-1/3 rounded-lg border text-sm"
+            placeholder="Estimasi tagihan (Opsional)" data-hidden-input="amount-${storeIndex}">
+        <input type="hidden" name="stores[${storeIndex}][expected_invoice_amount]" id="amount-${storeIndex}">
+        <button type="button" onclick="removeStoreRow(this)" class="text-red-500 cursor-pointer" title="Hapus">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
                     d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h.293l.347 9.293A2 2 0 006.635 17h6.73a2 2 0 001.995-1.707L15.707 6H16a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM8 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"
-                        clip-rule="evenodd" />
-                    </svg>
-                </button>
+                    clip-rule="evenodd" />
+            </svg>
+        </button>
+    `;
 
-            `;
             container.appendChild(row);
-            new TomSelect(row.querySelector('.tom-select')); // re-init tom-select
+
+            // 🔧 INIT TomSelect
+            new TomSelect(row.querySelector('.tom-select'));
+
+            // 🔧 FORMAT Rp
+            setupCurrencyFormat(row.querySelector('.currency-format'));
+
+            // 🔧 VALIDASI jam check-in dan checkout
+            setupTimeValidation(row);
+
             storeIndex++;
         }
+
 
         function removeStoreRow(button) {
             button.parentElement.remove();
