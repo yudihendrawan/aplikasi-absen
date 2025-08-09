@@ -14,11 +14,11 @@
             <flux:input wire:model="password" :label="__('Password')" type="password" required
                 autocomplete="current-password" :placeholder="__('Password')" />
 
-            @if (Route::has('password.request'))
+            {{-- @if (Route::has('password.request'))
                 <flux:link class="absolute right-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </flux:link>
-            @endif
+            @endif --}}
         </div>
 
         <!-- Remember Me -->
@@ -31,11 +31,11 @@
         </div>
     </form>
 
-    @if (Route::has('register'))
+    {{-- @if (Route::has('register'))
         <div
             class="space-x-1 text-center text-sm text-zinc-600 transition-transform active:scale-95 dark:text-zinc-400">
             {{ __('Don\'t have an account?') }}
             <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
         </div>
-    @endif
+    @endif --}}
 </div>

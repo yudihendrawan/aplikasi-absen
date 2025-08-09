@@ -37,6 +37,22 @@ class DashboardController extends Controller
             ->selectRaw('SUM(expected_invoice_amount) as expected, SUM(actual_invoice_amount) as actual')
             ->first();
 
+        $leavesToday = Leave::with('user')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->whereNotNull('approved_at')
+            ->when($user->hasRole('sales'), fn($q) => $q->where('user_id', $user->id))
+            ->get();
+
+        $pendingLeaves = [];
+        if ($user->hasRole('admin')) {
+            $pendingLeaves = Leave::with('user')
+                ->whereNull('approved_at')
+                ->whereNull('rejected_at')
+                ->orderBy('start_date')
+                ->get();
+        }
+
         return view('pages.dashboard.dashboard', [
             'totalStores' => Store::count(),
             'todaySchedulesCount' => $todaySchedulesCount,
@@ -49,11 +65,8 @@ class DashboardController extends Controller
                 ->count(),
             'invoicesToday' => $invoices,
             'visitsToday' => $baseSchedule->with(['sales', 'storeVisits.store', 'storeVisits.attendance'])->get(),
-            'leavesToday' => Leave::with('user')
-                ->whereDate('start_date', '<=', $today)
-                ->whereDate('end_date', '>=', $today)
-                ->when($user->hasRole('sales'), fn($q) => $q->where('user_id', $user->id))
-                ->get(),
+            'leavesToday' => $leavesToday,
+            'pendingLeaves' => $pendingLeaves,
         ]);
     }
 }

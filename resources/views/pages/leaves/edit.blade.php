@@ -86,7 +86,7 @@
                     <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         {{ __('Description') }}
                     </label>
-                    <textarea id="description" name="description" rows="3" required
+                    <textarea id="description" name="description" rows="3"
                         class="form-textarea block w-full rounded-lg border text-sm text-gray-900 dark:bg-gray-700 dark:border-gray-600 @error('description') border-red-500 @enderror"
                         placeholder="{{ __('Masukkan deskripsi') }}">{{ old('description', $leave->description) }}</textarea>
                     @error('description')

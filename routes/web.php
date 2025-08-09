@@ -22,57 +22,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
-Route::get('/accordion', function () {
-    return view('accordion');
-})->name('accordion');
-
-Route::get('/carousel', function () {
-    return view('carousel');
-})->name('carousel');
-
-Route::get('/modal', function () {
-    return view('modal');
-})->name('modal');
-
-Route::get('/collapse', function () {
-    return view('collapse');
-})->name('collapse');
-
-Route::get('/dial', function () {
-    return view('dial');
-})->name('dial');
-
-Route::get('/dismiss', function () {
-    return view('dismiss');
-})->name('dismiss');
-
-Route::get('/drawer', function () {
-    return view('drawer');
-})->name('drawer');
-
-Route::get('/dropdown', function () {
-    return view('dropdown');
-})->name('dropdown');
-
-Route::get('/popover', function () {
-    return view('popover');
-})->name('popover');
-
-Route::get('/tooltip', function () {
-    return view('tooltip');
-})->name('tooltip');
-
-Route::get('/input-counter', function () {
-    return view('input-counter');
-})->name('input-counter');
-
-Route::get('/tabs', function () {
-    return view('tabs');
-})->name('tabs');
-
-Route::get('/datepicker', function () {
-    return view('datepicker');
-})->name('datepicker');
 
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

@@ -11,6 +11,11 @@ class Leave extends Model
     use HasFactory;
     protected $fillable = ['user_id', 'name', 'reason', 'description', 'start_date', 'end_date', 'approved_at', 'approved_by', 'rejected_at', 'rejected_by', 'rejection_reason'];
 
+    // protected $cast = [
+    //     'start_date' => 'datetime',
+    //     'end_date' => 'datetime',
+    // ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

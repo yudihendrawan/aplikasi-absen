@@ -7,6 +7,7 @@
                     <th class="px-6 py-3">Nama Izin</th>
                     <th class="px-6 py-3">Alasan</th>
                     <th class="px-6 py-3">Deskripsi</th>
+                    <th class="px-6 py-3">Status Deskripsi</th>
                     <th class="px-6 py-3">Tanggal Mulai</th>
                     <th class="px-6 py-3">Tanggal Akhir</th>
                     <th class="px-6 py-3">Status</th>
@@ -21,6 +22,15 @@
                         <td class="px-6 py-4">{{ $leave->name ?? '-' }}</td>
                         <td class="px-6 py-4">{{ $leave->reason }}</td>
                         <td class="px-6 py-4">{{ $leave->description }}</td>
+                        <td class="px-6 py-4">
+                            @if ($leave->approved_at)
+                                <span class="text-green-600 dark:text-green-400">Disetujui</span>
+                            @elseif($leave->rejected_at)
+                                {{ $leave->rejection_reason ?? 'Ditolak' }}
+                            @else
+                                <span class="text-yellow-600 dark:text-yellow-400">Menunggu Persetujuan</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4">
                             {{ \Carbon\Carbon::parse($leave->start_date)->translatedFormat('d F Y') }}
                         </td>
@@ -111,10 +121,11 @@
                     placeholder="Masukkan alasan penolakan..."></textarea>
 
                 <div class="mt-4 flex justify-end gap-2">
-                    <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-md text-sm"
+                    <button type="button"
+                        class="px-4 py-2 cursor-pointer bg-gray-300 dark:bg-gray-600 rounded-md text-sm"
                         onclick="closeRejectModal()">Batal</button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">Tolak</button>
+                    <button type="submit" style="background-color: red ;color: white;"
+                        class="px-4 py-2 bg-red-600  rounded-md text-sm hover:bg-red-700 cursor-pointer">Tolak</button>
                 </div>
             </form>
         </div>

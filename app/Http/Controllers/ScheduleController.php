@@ -29,8 +29,8 @@ class ScheduleController extends Controller
         $query = Schedule::with(['sales',  'storeVisits', 'creator']);
 
         if ($search = $request->input('search')) {
-            $query->whereHas('sales', fn($q) => $q->where('name', 'like', "%$search%"))
-                ->orWhereHas('store', fn($q) => $q->where('name', 'like', "%$search%"));
+            $query->whereHas('sales', fn($q) => $q->where('name', 'like', "%$search%"));
+            // ->orWhereHas('store', fn($q) => $q->where('name', 'like', "%$search%"));
         }
 
         if ($startDate = $request->input('start_date')) {
@@ -95,8 +95,8 @@ class ScheduleController extends Controller
             'stores.*.checkout_time' => 'required|date_format:H:i|after_or_equal:stores.*.checkin_time',
         ]);
 
+
         $duplicateSchedule = Schedule::where('user_id', $request->user_id)
-            ->whereNotNull('approved_at')
             ->whereDate('visit_date', $request->visit_date)
             ->exists();
 
@@ -108,6 +108,7 @@ class ScheduleController extends Controller
 
 
         $leaveExists = Leave::where('user_id', $request->user_id)
+            ->whereNotNull('approved_at')
             ->whereDate('start_date', '<=', $request->visit_date)
             ->whereDate('end_date', '>=', $request->visit_date)
             ->exists();

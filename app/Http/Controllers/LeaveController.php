@@ -84,7 +84,13 @@ class LeaveController extends Controller
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
             ]);
-            Leave::create($request->all());
+            $leave = Leave::create($request->all());
+            $user = auth()->user();
+            if ($user->hasRole('admin')) {
+                $leave->update(['approved_at' => now(), 'rejected_at' => null, 'rejection_reason' => null]);
+            } else {
+                $leave->update(['approved_at' => null, 'rejected_at' => null, 'rejection_reason' => null]);
+            }
 
             return redirect()->route('leaves.index')->with('success', 'Izin berhasil di tambahkan.');
         } catch (\Throwable $th) {
