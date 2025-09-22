@@ -122,6 +122,7 @@
                                         <th class="px-4 py-2">Estimasi Tagihan</th>
                                         <th class="px-4 py-2">Tagihan yang Terbayar</th>
                                         <th class="px-4 py-2">Catatan</th>
+                                        <th class="px-4 py-2">Bukti</th> {{-- tambahin --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -130,18 +131,39 @@
                                             <td class="px-4 py-2">{{ $visit->store->name }}</td>
                                             <td class="px-4 py-2">{{ $visit->checkin_time ?? '-' }}</td>
                                             <td class="px-4 py-2">{{ $visit->checkout_time ?? '-' }}</td>
-                                            <td class="px-4 py-2">{{ '-' }}</td>
-                                            <td class="px-4 py-2">{{ '-' }}</td>
+                                            <td class="px-4 py-2">{{ $visit->attendance->check_in_time ?? '-' }}</td>
+                                            <td class="px-4 py-2">{{ $visit->attendance->check_out_time ?? '-' }}</td>
                                             <td class="px-4 py-2">Rp
                                                 {{ number_format($visit->expected_invoice_amount ?? 0, 0, ',', '.') }}
                                             </td>
                                             <td class="px-4 py-2">Rp
-                                                {{ number_format($visit->expected_invoice_amount ?? 0, 0, ',', '.') }}
+                                                {{ number_format($visit->attendance->actual_invoice_amount ?? 0, 0, ',', '.') }}
                                             </td>
-                                            <td class="px-4 py-2">{{ '-' }}</td>
+                                            <td class="px-4 py-2">{{ $visit->attendance->note ?? '-' }}</td>
+                                            <td class="px-4 py-2 space-x-2">
+                                                @if ($visit->attendance)
+                                                    @foreach ($visit->attendance->getMedia('checkins') as $media)
+                                                        <a href="{{ $media->getUrl() }}" target="_blank"
+                                                            class="text-blue-500 underline">Check-in</a>
+                                                    @endforeach
+
+                                                    @foreach ($visit->attendance->getMedia('checkouts') as $media)
+                                                        <a href="{{ $media->getUrl() }}" target="_blank"
+                                                            class="text-green-500 underline">Check-out</a>
+                                                    @endforeach
+
+                                                    @foreach ($visit->attendance->getMedia('bukti_invoice') as $media)
+                                                        <a href="{{ $media->getUrl() }}" target="_blank"
+                                                            class="text-purple-500 underline">Invoice</a>
+                                                    @endforeach
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
+
                             </table>
                         @endif
                     </div>

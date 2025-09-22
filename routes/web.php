@@ -63,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('attendances', AttendanceController::class);
 
     // web.php
+
+    Route::post('/attendances/create-checkout}',[AttendanceController::class, 'submitCheckOut'])->name('attendances.create-checkout');
     Route::get('/attendances/create-presence/{visit}', [AttendanceController::class, 'createPresence'])->name('attendances.createPresence');
     Route::get('/attendances/calendar', [AttendanceController::class, 'calendar'])->name('attendances.calendar');
 

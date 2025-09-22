@@ -58,12 +58,16 @@ class ScheduleController extends Controller
         return view('pages.schedules.index', compact('schedules'));
     }
 
-    public function showVisits(Schedule $schedule)
-    {
-        $schedule->load(['storeVisits.store']);
+  public function showVisits(Schedule $schedule)
+{
+    $schedule->load([
+        'storeVisits.store',
+        'storeVisits.attendance.media', 
+    ]);
 
-        return view('pages.schedules.partials.modal-visits', compact('schedule'));
-    }
+    return view('pages.schedules.partials.modal-visits', compact('schedule'));
+}
+
 
 
     /**

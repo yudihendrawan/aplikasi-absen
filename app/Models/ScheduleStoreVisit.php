@@ -19,6 +19,12 @@ class ScheduleStoreVisit extends Model
         'checkout_time'
     ];
 
+    protected $casts = [
+    'checkin_time' => 'datetime',
+    'checkout_time' => 'datetime',
+];
+
+
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class);

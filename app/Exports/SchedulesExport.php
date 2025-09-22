@@ -18,10 +18,12 @@ class SchedulesExport implements FromView
 
     public function view(): View
     {
-        $query = Schedule::with([
-            'sales',
-            'storeVisits.store',
-        ]);
+       $query = Schedule::with([
+    'sales',
+    'storeVisits.store',
+    'storeVisits.attendance.media', // tambah ini
+]);
+
 
         if ($search = $this->request->input('search')) {
             $query->whereHas(

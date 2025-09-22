@@ -59,8 +59,16 @@
                                     ✔️ Hadir:
                                     {{ \Carbon\Carbon::parse($visit->attendance->check_in_time)->format('H:i') ?? '-' }}
                                     -
-                                    {{ $visit->attendance->check_out_time ? \Carbon\Carbon::parse($visit->attendance->check_out_time)->format('H:i') : 'belum absen pulang' }}
+                                    @if ($visit->attendance->check_out_time)
+                                        {{ \Carbon\Carbon::parse($visit->attendance->check_out_time)->format('H:i') }}
+                                    @else
+                                        <a href="{{ route('attendances.createPresence', $visit->id) }}"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded">
+                                            📍 Absen Pulang
+                                        </a>
+                                    @endif
                                 </div>
+
                                 <div class="text-xs">
                                     Tagihan Realita: <strong>Rp
                                         {{ number_format($visit->attendance->actual_invoice_amount ?? 0, 0, ',', '.') }}</strong>
@@ -78,7 +86,7 @@
                                         $visit->schedule->visit_date . ' ' . $checkin->format('H:i:s'),
                                         config('app.timezone'),
                                     )->addMinutes($tolerance);
-                                    $canAbsen = now()->lessThanOrEqualTo($absenUntil);
+                                    $canAbsen = now()->endOfDay();
                                 @endphp
                                 @if ($canAbsen)
                                     <a href="{{ route('attendances.createPresence', $visit->id) }}"
